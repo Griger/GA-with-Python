@@ -1,0 +1,72 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{float}
+\usepackage[table,xcdraw]{xcolor} %para usar tablas con color de fondo en las celdas
+\usepackage{hyperref} %para poder poner enlaces
+\usepackage{listings} %para insertar código
+\usepackage{tikz}%para pintar las redes neuronales
+\usepackage{color} %para poder definir y usar colores
+\usepackage{soul} %para hacer los subrayados
+
+\author{\textbf{Gustavo Rivas Gervilla}}
+\title{\textcolor{deepblue}{\textbf{Agoritmos Genéticos para QAP}}}
+\date{}
+
+%Configurando lstlisting para mostrar código Python con algún 	 de colores (copiado de http://tex.stackexchange.com/questions/83882/how-to-highlight-python-syntax-in-latex-listings-lstinputlistings-command) ------------------------------
+% Custom colors
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{light-gray}{gray}{0.85}
+\definecolor{comment-gray}{gray}{0.65}
+\definecolor{light-green}{rgb}{0.66,1,0.5}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{8} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{8}  % for normal
+
+%Configuración de los listings
+\lstset{
+	language=Python,
+	basicstyle=\ttm,
+	otherkeywords={self},             % Add keywords here
+	keywordstyle=\ttb\color{deepblue},
+	emph={MyClass,__init__},          % Custom highlighting
+	emphstyle=\ttb\color{deepred},    % Custom highlighting style
+	stringstyle=\color{deepgreen},
+	frame=tb,                         % Any extra options here
+	showstringspaces=false,            % 
+	commentstyle=\ttm\color{comment-gray}, % Custom comment style
+}
+%--------------------------------------------------------------------------------
+
+\newcommand{\code}[1]{\sethlcolor{light-gray}\hl{\texttt{#1}}} %Comando para poner código inline
+\newcommand{\archive}[1]{\sethlcolor{light-green}\hl{\texttt{#1}}} %Comando para resaltar nombres de archivos
+\renewcommand\tablename{Tabla} %Cambiar el nombre de las tablas
+\renewcommand\figurename{Figura} %Cambiar el nombre de las tablas
+\renewcommand{\contentsname}{Índice} %Cambiar el nombre de la ToC
+
+\begin{document}
+\maketitle
+\begin{center}
+\textbf{IC. Máster Universitario en Ingeniería Informática}
+\newline
+\newline
+\newline
+\includegraphics[scale=0.5]{img/decsai}
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+%Definición de variables para tikz
+\def\layersep{2.5cm}
+
+\section{Introducción}
+
+\end{document}
