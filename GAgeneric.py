@@ -1,6 +1,6 @@
 import numpy as np
 from math import *
-from evaluator import score
+from evaluator import score, mutationScore
 
 '''
 Implementation of a generic genetic algorithm
@@ -8,9 +8,10 @@ Implementation of a generic genetic algorithm
 
 def cross(firstParent, secondParent):
 
-
-def mutate():
 '''
+def mutate(individual, i, j):
+    individual["score"] = mutationScore(individual, i, j)
+    individual["chromosome"][i], individual["chromosome"][j] = individual["chromosome"][j], individual["chromosome"][i]
 
 
 def AG (parameters, problemDim, distanceMtx, weightMtx):
