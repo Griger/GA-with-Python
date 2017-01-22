@@ -18,35 +18,19 @@ class Evaluator:
         else:
             print(f"{score} is not correct for {chromosome}. The actual score is {actualScore}.")
 
-    def mutationScore(self, currentChromosome, newChromosome, currentScore, i, j): # i <= j TODO
-        #newChromosome = currentChromosome
-        #newChromosome[i], newChromosome[j] = newChromosome[j], newChromosome[i]
-        print(f"newChromosome: {newChromosome}")
-        
-        mutationScore = currentScore - sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[currentChromosome[[i,j], None], currentChromosome], 1))
-        mutationScore += sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[newChromosome[[i,j], None], newChromosome], 1))
-
-        idx = list(range(self.dim)) ; del(idx[i]) ; del(idx[j-1])
-        
-        mutationScore -= sum(sum(self.wMtx[idx, [i,j]] * self.dMtx[currentChromosome[idx, None], currentChromosome[[i,j]]]))
-        mutationScore += sum(sum(self.wMtx[idx, [i,j]] * self.dMtx[newChromosome[idx, None], newChromosome[[i,j]]]))
-
-        return mutationScore
-
-    def mutationScore2(self, currentChromosome, currentScore, i, j): # i <= j TODO
+    def mutationScore(self, currentChromosome, currentScore, i, j): # i <= j TODO
         newChromosome = np.copy(currentChromosome)
         newChromosome[i], newChromosome[j] = newChromosome[j], newChromosome[i]
-        print(f"newChromosome: {newChromosome}")
-        print(f"currentChromosome: {currentChromosome}")
-        
-        mutationScore = currentScore - sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[currentChromosome[[i,j], None], currentChromosome], 1))
-        mutationScore += sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[newChromosome[[i,j], None], newChromosome], 1))
+       
+        mutationScore = currentScore - sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[currentChromosome[[i,j], None], currentChromosome], 1))        
+        mutationScore += sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[newChromosome[[i,j], None], newChromosome], 1))        
 
         idx = list(range(self.dim)) ; del(idx[i]) ; del(idx[j-1])
-        
-        mutationScore -= sum(sum(self.wMtx[idx, [i,j]] * self.dMtx[currentChromosome[idx, None], currentChromosome[[i,j]]]))
-        mutationScore += sum(sum(self.wMtx[idx, [i,j]] * self.dMtx[newChromosome[idx, None], newChromosome[[i,j]]]))
+                
+        mutationScore -= sum(sum(self.wMtx[idx][:,[i,j]] * self.dMtx[currentChromosome[idx, None], currentChromosome[[i,j]]]))       
+        mutationScore += sum(sum(self.wMtx[idx][:,[i,j]] * self.dMtx[newChromosome[idx, None], newChromosome[[i,j]]]))
 
+       
         return mutationScore
 
 
