@@ -55,41 +55,41 @@ class AG:
 
         parent.sort(order = "score", kind = 'mergesort')
 
-        print(parent)
+        for i in range(1):
+            if (i % 10 == 0):
+                print(f"Generación {i}")
+            #selection by binary tournament
+            selectedParentIdx = np.empty(popSize, dtype = np.int32)
 
-        # while(true):
-        #selection by binary tournament
-        selectedParentIdx = np.empty(popSize, dtype = np.int32)
+            for idx in range(popSize):
+                selectedParentIdx[idx] = np.random.randint(low = 0, high = np.random.randint(1, popSize))
 
-        for idx in range(popSize):
-            selectedParentIdx[idx] = np.random.randint(low = 0, high = np.random.randint(1, popSize))
+            selectedPairs = zip(selectedParentIdx[0:2*nCrosses:2], selectedParentIdx[1:2*nCrosses:2])
 
-        selectedPairs = zip(selectedParentIdx[0:2*nCrosses:2], selectedParentIdx[1:2*nCrosses:2])
+            #cross
+            children = np.zeros(popSize, dtype = dataType)
+            crossPoints = np.random.randint(n, size = 2*nCrosses)
 
-        #cross
-        children = np.zeros(popSize, dtype = dataType)
-        crossPoints = np.random.randint(n, size = 2*nCrosses)
+            for pair, idx1, idx2 in zip(selectedPairs, range(0,2*nCrosses,2), range(1,2*nCrosses,2)):
+                children[idx1], children[idx2] = self.cross(parent[pair[0]], parent[pair[1]], crossPoints[idx1], crossPoints[idx2])
 
-        for pair, idx1, idx2 in zip(selectedPairs, range(0,2*nCrosses,2), range(1,2*nCrosses,2)):
-            children[idx1], children[idx2] = self.cross(parent[pair[0]], parent[pair[1]], crossPoints[idx1], crossPoints[idx2])
+            children[2*nCrosses:] = parent[selectedParentIdx[2*nCrosses:]].copy()
 
-        children[2*nCrosses:] = parent[selectedParentIdx[2*nCrosses:]].copy()
+            #mutation
+            mutantChildrenIdx = np.random.randint(popSize, size = nMutations)
+            mutantGenes = np.random.randint(n, size = 2*nMutations)
 
-        #mutation
-        mutantChildrenIdx = np.random.randint(popSize, size = nMutations)
-        mutantGenes = np.random.randint(n, size = 2*nMutations)
+            for idx, genIdx in zip(mutantChildrenIdx, range(nMutations)):
+                self.mutate(children[idx], mutantGenes[2*genIdx], mutantGenes[2*genIdx+1])
 
-        for idx, genIdx in zip(mutantChildrenIdx, range(nMutations)):
-            self.mutate(children[idx], mutantGenes[2*genIdx], mutantGenes[2*genIdx+1])
+            #replacement with elitism
+            children.sort(order = "score", kind = 'mergesort')
 
-        #replacement with elitism
-        children.sort(order = "score", kind = 'mergesort')
+            if children["score"][0] > parent["score"][0]:
+                children[-1] = parent[0]
 
-        if children["score"][0] > parent["score"][0]:
-            children[-1] = parent[0]
+            parent = children
 
-        parent = children
-
-        parent.sort(order = "score", kind = 'mergesort')
+            parent.sort(order = "score", kind = 'mergesort')
 
         return parent[0]["chromosome"], parent[0]["score"]
