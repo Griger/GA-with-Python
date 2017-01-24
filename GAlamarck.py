@@ -1,12 +1,14 @@
 import numpy as np
 from math import *
 import evaluator as ev
+from opt import *
 import time
+import multiprocessing
 import random
 
 #Implementation of a generic genetic algorithm
 
-class AG:
+class AGL:
     def __init__(self, problemDim, weightMtx, distanceMtx):
         self.evaluator = ev.Evaluator(problemDim, weightMtx, distanceMtx)
         self.dim = problemDim
@@ -34,8 +36,8 @@ class AG:
         individual["score"] = self.evaluator.mutationScore(individual["chromosome"], individual["score"], i, j)
         individual["chromosome"][i], individual["chromosome"][j] = individual["chromosome"][j], individual["chromosome"][i]
 
-    def AG (self, parameters):
-        print("Running AG over a", self.dim, "dimension problem")
+    def AGL (self, parameters):
+        print("Running AGL over a", self.dim, "dimension problem")
 
         n = self.dim
         popSize = parameters.populationSize
@@ -54,6 +56,21 @@ class AG:
         for individual in parent:
             individual["chromosome"] = np.random.permutation(n)
             individual["score"] = self.evaluator.score(individual["chromosome"])
+
+        opt = Opt(n, self.evaluator)
+
+        nOpts = 8
+        #optIdx = random.sample(range(popSize), nOpts) #apply 2opt to random individuals
+        parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the worst individuals
+        pool = multiprocessing.Pool(processes=8)
+
+        start = time.time()
+        parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
+        #parent[optIdx] = pool.map(opt.twoOpt, parent[optIdx]) #apply 2opt to random individuals
+        end = time.time()
+        print(f"Se han tardado {end-start} segundos.")
+
+        pool.close()
 
         parent.sort(order = "score", kind = 'mergesort')
 
@@ -89,6 +106,14 @@ class AG:
                 children[-1] = parent[0]
 
             parent = children
+
+            #optIdx = random.sample(range(popSize), nOpts) #apply 2opt to random individuals
+            parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the worst individuals
+
+            pool = multiprocessing.Pool(processes=8)
+            #parent[optIdx] = pool.map(opt.twoOpt, parent[optIdx]) #apply 2opt to random individuals
+            parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
+            pool.close()
 
             parent.sort(order = "score", kind = 'mergesort')
             print("Score mejor padre en la generación", i, float(parent[0]["score"]))
