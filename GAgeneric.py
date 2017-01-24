@@ -69,7 +69,9 @@ class AG:
 
 
         '''
-        print("El score del padre a optimizar:", parent["score"][0])
+        print("El score del padre a optimizar:", float(parent["score"][0]))
+
+
         start = time.time()
         mejora = opt.twoOpt(parent[0])
         end = time.time()
@@ -116,6 +118,6 @@ class AG:
                 parent[idx] = opt.twoOpt(parent[idx])
 
             parent.sort(order = "score", kind = 'mergesort')
-            print("Score mejor padre en la generación", i, parent[0]["score"])
+            print("Score mejor padre en la generación", i, float(parent[0]["score"]))
 
         return parent[0]["chromosome"], parent[0]["score"]
