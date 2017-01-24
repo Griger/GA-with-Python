@@ -8,7 +8,7 @@ genericParameters = namedtuple("genericParameters", "populationSize crossProbabi
 
 np.random.seed(12345678)
 
-parameters = genericParameters(100, 0.3, 0.2)
+parameters = genericParameters(100, 0.3, 0.1)
 problemDim, weightMtx, distanceMtx = rd.readData("tai256c.dat")
 
 A = np.array([[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]])

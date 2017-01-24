@@ -59,23 +59,31 @@ class AG:
 
         opt = Opt(n, self.evaluator)
 
+        parent.sort(order = "score", kind = 'mergesort')
+
+        '''
         optIdx = random.sample(range(popSize), 10)
 
         for idx in optIdx:
             parent[idx] = opt.twoOpt(parent[idx])
+        '''
+
+        for idx in range(1):
+            print("Score padrea antes:", parent[idx]["score"])
+            parent[idx] = opt.twoOpt(parent[idx])
+            print("Score padrea despues:", parent[idx]["score"])
 
         parent.sort(order = "score", kind = 'mergesort')
-
-
+        print("Score mejor padre antes de empezar nada:", parent[0]["score"])
 
         '''
-        print("El score del padre a optimizar:", float(parent["score"][0]))
+        print("El score del padre a optimizar:", float(parent["score"][-1]))
 
 
         start = time.time()
-        mejora = opt.twoOpt(parent[0])
+        mejora = opt.twoOpt(parent[-1])
         end = time.time()
-        print("Despues de optimizar:", mejora["score"])
+        print("Despues de optimizar:", float(mejora["score"]))
         print(f"Se han tardado: {end-start} segundos.")
         '''
 
@@ -107,15 +115,25 @@ class AG:
             #replacement with elitism
             children.sort(order = "score", kind = 'mergesort')
 
+            print("Score mejor padre antes del elitismo:", parent[0]["score"])
             if children["score"][0] > parent["score"][0]:
                 children[-1] = parent[0]
 
             parent = children
 
-            optIdx = random.sample(range(popSize), 10)
+            parent.sort(order = "score", kind = 'mergesort')
 
-            for idx in optIdx:
+            for idx in range(1):
+                print("Score padrea antes:", parent[idx]["score"])
                 parent[idx] = opt.twoOpt(parent[idx])
+                print("Score padrea despues:", parent[idx]["score"])
+
+
+            # optIdx = random.sample(range(popSize), 10)
+            #
+            # for idx in optIdx:
+            #     parent[idx] = opt.twoOpt(parent[idx])
+
 
             parent.sort(order = "score", kind = 'mergesort')
             print("Score mejor padre en la generación", i, float(parent[0]["score"]))

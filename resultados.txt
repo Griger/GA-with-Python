@@ -1,2 +1,6 @@
 4.48726e+07 aplicando una vex el 2opt por generación con una mutación de 0.1 y un cruce de 0.3
 4.48743e+07 aplicando 10 veces el 2opt por generación con una mutación de 0.2 y un cruce de 0.3
+51217716.0 aplicando a los 10 peores el 2opt con una mutación de 0.1 y un cruce de 0.3 (1 generación)
+49900144.0 aplicando a los 10 peores el 2opt con una mutación de 0.1 y un cruce de 0.3 (2 generación)
+49900144.0 aplicando a los 10 peores el 2opt con una mutación de 0.1 y un cruce de 0.3 (3 generación)
+49900144.0 aplicando a los 10 peores el 2opt con una mutación de 0.1 y un cruce de 0.3 (4 generación)

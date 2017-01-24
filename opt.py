@@ -13,11 +13,8 @@ class Opt:
         evaluate = self.evaluator.mutationScoreOpt
 
         while (S != bestIndividual):
-            start = time.time()
             bestIndividual = S.copy()
-            end = time.time()
-            print("Se han tardado", end-start, "segundos.")
-
+            
             for i in range(self.dim):
                 for j in range(i+1, self.dim):
                     newScore = evaluate(S["chromosome"], S["score"], i, j)
