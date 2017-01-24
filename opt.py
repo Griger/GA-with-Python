@@ -16,7 +16,7 @@ class Opt:
             start = time.time()
             bestIndividual = S.copy()
             end = time.time()
-            print(f"Se han tardado {end-start} segundos")
+            print("Se han tardado", end-start, "segundos.")
 
             for i in range(self.dim):
                 for j in range(i+1, self.dim):

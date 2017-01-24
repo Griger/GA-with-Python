@@ -16,7 +16,7 @@ class Evaluator:
         if (actualScore == score):
             print("The score is correct.")
         else:
-            print(f"{score} is not correct for {chromosome}. The actual score is {actualScore}.")
+            print(score, "is not correct for", chromosome, ". The actual score is", actualScore, ".")
 
     def mutationScore(self, currentChromosome, currentScore, i, j):
         newChromosome = np.copy(currentChromosome)

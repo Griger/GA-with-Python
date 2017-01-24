@@ -22,4 +22,4 @@ start = time.time()
 print(ag.AG(parameters))
 end = time.time()
 
-print(f"Se han tardado {end-start} segundos para una generación.")
+print("Se han tardado", end-start, "segundos para una generación.")

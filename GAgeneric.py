@@ -37,7 +37,7 @@ class AG:
         individual["chromosome"][i], individual["chromosome"][j] = individual["chromosome"][j], individual["chromosome"][i]
 
     def AG (self, parameters):
-        print(f"Running AG over a {self.dim}-dimension problem")
+        print("Running AG over a", self.dim, "dimension problem")
 
         n = self.dim
         popSize = parameters.populationSize
