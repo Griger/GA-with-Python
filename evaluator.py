@@ -33,6 +33,22 @@ class Evaluator:
 
         return mutationScore
 
+    def mutationScoreOpt(self, currentChromosome, currentScore, i, j):
+        idx = list(range(self.dim)) ; del(idx[i]) ; del(idx[j-1])
+
+        mutationScore = currentScore - sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[currentChromosome[[i,j], None], currentChromosome], 1))
+        mutationScore -= sum(sum(self.wMtx[idx][:,[i,j]] * self.dMtx[currentChromosome[idx, None], currentChromosome[[i,j]]]))
+
+        currentChromosome[i], currentChromosome[j] = currentChromosome[j], currentChromosome[i]
+
+        mutationScore += sum(np.sum(self.wMtx[[i,j], :] * self.dMtx[currentChromosome[[i,j], None], currentChromosome], 1))
+        mutationScore += sum(sum(self.wMtx[idx][:,[i,j]] * self.dMtx[currentChromosome[idx, None], currentChromosome[[i,j]]]))
+
+        #revert changes
+        currentChromosome[i], currentChromosome[j] = currentChromosome[j], currentChromosome[i]
+
+        return mutationScore
+
 
     def score(self, chromosome):
         return sum(np.sum(self.wMtx * self.dMtx[chromosome[:, None], chromosome], 1))

@@ -14,7 +14,6 @@ def readData (file):
     f.readline()
     matrixLines = [f.readline().split() for i in range(dim)]
 
-    print(matrixLines)
     secondMatrix = np.asarray([[float(number) for number in line] for line in matrixLines], dtype = np.float32)
 
     return dim, matrix, secondMatrix

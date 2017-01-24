@@ -1,6 +1,10 @@
 import numpy as np
 from math import *
 import evaluator as ev
+from opt import *
+import time
+import cProfile
+import random
 
 #Implementation of a generic genetic algorithm
 
@@ -53,11 +57,27 @@ class AG:
             individual["chromosome"] = np.random.permutation(n)
             individual["score"] = self.evaluator.score(individual["chromosome"])
 
+        opt = Opt(n, self.evaluator)
+
+        optIdx = random.sample(range(popSize), 10)
+
+        for idx in optIdx:
+            parent[idx] = opt.twoOpt(parent[idx])
+
         parent.sort(order = "score", kind = 'mergesort')
 
-        for i in range(1):
-            if (i % 10 == 0):
-                print(f"Generación {i}")
+
+
+        '''
+        print("El score del padre a optimizar:", parent["score"][0])
+        start = time.time()
+        mejora = opt.twoOpt(parent[0])
+        end = time.time()
+        print("Despues de optimizar:", mejora["score"])
+        print(f"Se han tardado: {end-start} segundos.")
+        '''
+
+        for i in range(100):
             #selection by binary tournament
             selectedParentIdx = np.empty(popSize, dtype = np.int32)
 
@@ -90,6 +110,12 @@ class AG:
 
             parent = children
 
+            optIdx = random.sample(range(popSize), 10)
+
+            for idx in optIdx:
+                parent[idx] = opt.twoOpt(parent[idx])
+
             parent.sort(order = "score", kind = 'mergesort')
+            print("Score mejor padre en la generación", i, parent[0]["score"])
 
         return parent[0]["chromosome"], parent[0]["score"]
