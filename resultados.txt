@@ -12,3 +12,8 @@ LAMARCKIANO PARALELIZADO
 44862524.0 aplicando a 8 individuos al azar el 2opt con una mutación de 0.2 y un cruce de 0.5 (50 generaciones, estancando desde la 21)
 
 44890208.0 aplicando a los 8 peores individuos de la población el 2opt con una mutación de 0.2 y un cruce de 0.5 (21 generaciones, estancado desde la 0)
+44854840.0 aplicando a los 8 peores individuos de la población el 2opt con una mutación de 0.1 y un cruce de 0.3 (33 generaciones, estancado desde la 9)
+
+44845300.0 aplicando a los 8 mejores individuos de la población el 2opt con una mutación de 0.1 y un cruce de 0.3 (52 generaciones, estancado desde la 33)
+
+44821204.0 aplicando a los 20 mejores individuos de la población el 2opt con una mutación de 0.1 y un cruce de 0.3 (36 generaciones, igual desde la 34)

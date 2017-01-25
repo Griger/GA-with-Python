@@ -59,13 +59,14 @@ class AGL:
 
         opt = Opt(n, self.evaluator)
 
-        nOpts = 8
+        nOpts = 20
         #optIdx = random.sample(range(popSize), nOpts) #apply 2opt to random individuals
         parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the worst individuals
         pool = multiprocessing.Pool(processes=8)
 
         start = time.time()
-        parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
+        parent[:nOpts] = pool.map(opt.twoOpt, parent[:nOpts]) #apply 2opt to the best individuals
+        #parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
         #parent[optIdx] = pool.map(opt.twoOpt, parent[optIdx]) #apply 2opt to random individuals
         end = time.time()
         print(f"Se han tardado {end-start} segundos.")
@@ -112,7 +113,8 @@ class AGL:
 
             pool = multiprocessing.Pool(processes=8)
             #parent[optIdx] = pool.map(opt.twoOpt, parent[optIdx]) #apply 2opt to random individuals
-            parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
+            #parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
+            parent[:nOpts] = pool.map(opt.twoOpt, parent[:nOpts]) #apply 2opt to the best individuals
             pool.close()
 
             parent.sort(order = "score", kind = 'mergesort')
