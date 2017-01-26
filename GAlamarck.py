@@ -76,7 +76,7 @@ class AGL:
 
         pool.close()
         '''
-        parent = np.load("lamarck20BestGenerations/101.npy")
+        parent = np.load("lamarck20BestGenerations/122.npy")
         parent.sort(order = "score", kind = 'mergesort')
         bestScore = parent[0]["score"]
 
@@ -131,11 +131,11 @@ class AGL:
                 bestScore = bestGenerationScore
                 end = time.time()
                 elapsedTime = end - start
-                fileName = baseName + "iter" + str(102+i) + "score" + str(float(bestGenerationScore)) + "time" + str(elapsedTime) + ".npy"
+                fileName = baseName + "iter" + str(123+i) + "score" + str(float(bestGenerationScore)) + "time" + str(elapsedTime) + ".npy"
                 np.save(fileName, parent[0])
 
             if (i % 10 == 0):
-                fileName = "lamarck20BestGenerations/" + str(102+i) + ".npy"
+                fileName = "lamarck20BestGenerations/" + str(123+i) + ".npy"
                 np.save(fileName, parent)
 
         return parent[0]["chromosome"], parent[0]["score"]

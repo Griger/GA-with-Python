@@ -18,7 +18,7 @@ genericParameters = namedtuple("genericParameters", "populationSize crossProbabi
 
 np.random.seed(12345678)
 
-parameters = genericParameters(100, 0.3, 0.1)
+parameters = genericParameters(100, 0.5, 0.02)
 problemDim, weightMtx, distanceMtx = rd.readData("tai256c.dat")
 
 ag = AG.AG(problemDim, weightMtx, distanceMtx)
