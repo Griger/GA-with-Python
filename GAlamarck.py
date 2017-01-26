@@ -53,7 +53,7 @@ class AGL:
         nMutations = ceil(popSize * n * mutationProb)
 
         sizeChromosomeString = str(n) + 'int'
-        dataType = np.dtype([('chromosome', sizeChromosomeString), ('score', np.float32)])
+        dataType = np.dtype([('chromosome', sizeChromosomeString), ('score', np.int64)])
 
         opt = Opt(n, self.evaluator)
 
@@ -76,9 +76,15 @@ class AGL:
 
         pool.close()
         '''
-        parent = np.load("lamarck20BestGenerations/122.npy")
+        parent = np.load("lamarck20BestGenerations/223.npy")
+
+        for individual in parent:
+            individual["score"] = self.evaluator.score(individual["chromosome"])
+
         parent.sort(order = "score", kind = 'mergesort')
         bestScore = parent[0]["score"]
+
+        #self.evaluator.checkScore(parent[0]["chromosome"], bestScore)
 
         for i in range(1000):
             #selection by binary tournament
@@ -122,8 +128,9 @@ class AGL:
             parent[:nOpts] = pool.map(opt.twoOpt, parent[:nOpts]) #apply 2opt to the best individuals
             pool.close()
 
+            offset = 224
             parent.sort(order = "score", kind = 'mergesort')
-            print("Score mejor padre en la generación", i, float(parent[0]["score"]))
+            print("Score mejor padre en la generación", i+offset, int(parent[0]["score"]))
 
             bestGenerationScore = parent[0]["score"]
 
@@ -131,11 +138,11 @@ class AGL:
                 bestScore = bestGenerationScore
                 end = time.time()
                 elapsedTime = end - start
-                fileName = baseName + "iter" + str(123+i) + "score" + str(float(bestGenerationScore)) + "time" + str(elapsedTime) + ".npy"
+                fileName = baseName + "iter" + str(offset+i) + "score" + str(int(bestGenerationScore)) + "time" + str(elapsedTime) + ".npy"
                 np.save(fileName, parent[0])
 
             if (i % 10 == 0):
-                fileName = "lamarck20BestGenerations/" + str(123+i) + ".npy"
+                fileName = "lamarck20BestGenerations/" + str(offset+i) + ".npy"
                 np.save(fileName, parent)
 
         return parent[0]["chromosome"], parent[0]["score"]

@@ -8,12 +8,12 @@ def readData (file):
     #read first matrix
     f.readline()
     matrixLines = [f.readline().split() for i in range(dim)]
-    matrix = np.asarray([[float(number) for number in line] for line in matrixLines], dtype = np.float32)
+    matrix = np.asarray([[int(number) for number in line] for line in matrixLines], dtype = np.int64)
 
     #read second matrix
     f.readline()
     matrixLines = [f.readline().split() for i in range(dim)]
 
-    secondMatrix = np.asarray([[float(number) for number in line] for line in matrixLines], dtype = np.float32)
+    secondMatrix = np.asarray([[int(number) for number in line] for line in matrixLines], dtype = np.int64)
 
     return dim, matrix, secondMatrix

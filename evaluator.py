@@ -7,7 +7,7 @@ class Evaluator:
         self.dim = problemDim
 
     def checkScore(self, chromosome, score):
-        actualScore = 0.0
+        actualScore = 0
 
         for i in range(self.dim):
             for j in range(self.dim):
