@@ -69,4 +69,23 @@
 
 \section{Introducción}
 
+En esta práctica nos enfrentamos al problema de la asignación cuadrática (QAP), empleando para su resolución algoritmos genéticos. Nos enfrentamos a diversos problemas, aunque el que realmente nos ocupa es el tai256c ya que es el que se emplea para establecer el ranking de puntuación de la parte de competición de esta práctica.\\
+
+Este problema tiene un espacio de búsqueda de 256! elementos con lo que es evidente que una estrategia de fuerza bruta no es viable. Por lo tanto una solución basada en algoritmos genéticos es una buena aproximación para esta resolución, pese a que otros algoritmos son los que han obtenido la mejor solución al problema tai256c. Veamos cómo hemos abordado esta práctica.\\
+
+También se considerarán dos variables meméticas del algoritmos genéticos usual, las variantes balwiniana y lamarckiana, haciendo uso del algortimos 2-opt para el proceso de optimización local de soluciones.
+
+\section{Implementación}
+
+Para la implementación de los algoritmos necesarios para esta práctica nuevamente hemos optado por \code{Python 3.6}, en esta ocasión sin hacer uso de la librería Theano para hacer cálculos matrices optimizados, pese a que hemos tenido algunos problemas de rendimiento que se detallarán más adelante, en un inicio no se consideró necesario y por tanto no se ha incorporado esta librería.\\
+
+Sí que hemos hecho uso de \code{Numpy} ya que para los cálculos matrices resulta mucho más eficiente que implementar el bucle doble pertinente, de hecho ya veremso el problema que nos ha supuesto el uso de un bucle doble en nuestro código.
+
+\subsection{Representación, operador de cruce y mutación}
+
+
+
+\subsection{Algunas consideraciones}
+
+\section{Experimentación}
 \end{document}
