@@ -39,10 +39,14 @@ class AGL:
     def AGL (self, parameters):
         print("Running AGL over a", self.dim, "dimension problem")
 
+        start = time.time()
         n = self.dim
         popSize = parameters.populationSize
         crossProb = parameters.crossProbability
         mutationProb = parameters.mutationProbability
+
+        bestScore = float('inf')
+        baseName = "resultsLamarck20Best/PS" + str(popSize) + "CP" + str(crossProb) + "MP" + str(mutationProb)
 
         nCrosses = ceil(popSize/2.0 * crossProb)
         nMutations = ceil(popSize * n * mutationProb)
@@ -64,18 +68,15 @@ class AGL:
         parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the worst individuals
         pool = multiprocessing.Pool(processes=8)
 
-        start = time.time()
         parent[:nOpts] = pool.map(opt.twoOpt, parent[:nOpts]) #apply 2opt to the best individuals
         #parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
         #parent[optIdx] = pool.map(opt.twoOpt, parent[optIdx]) #apply 2opt to random individuals
-        end = time.time()
-        print(f"Se han tardado {end-start} segundos.")
 
         pool.close()
 
         parent.sort(order = "score", kind = 'mergesort')
 
-        for i in range(100):
+        for i in range(1000):
             #selection by binary tournament
             selectedParentIdx = np.empty(popSize, dtype = np.int32)
 
@@ -119,5 +120,18 @@ class AGL:
 
             parent.sort(order = "score", kind = 'mergesort')
             print("Score mejor padre en la generación", i, float(parent[0]["score"]))
+
+            bestGenerationScore = parent[0]["score"]
+
+            if (bestScore > bestGenerationScore):
+                bestScore = bestGenerationScore
+                end = time.time()
+                elapsedTime = end - start
+                fileName = baseName + "iter" + str(i) + "score" + str(float(bestGenerationScore)) + "time" + str(elapsedTime) + ".npy"
+                np.save(fileName, parent[0])
+
+            if (i % 10 == 0):
+                fileName = "lamarck20BestGenerations/" + str(i) + ".npy"
+                np.save(fileName, parent)
 
         return parent[0]["chromosome"], parent[0]["score"]
