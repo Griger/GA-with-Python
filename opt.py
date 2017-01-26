@@ -14,6 +14,7 @@ class Opt:
         while (S != bestIndividual):
             bestIndividual = S.copy()
 
+
             for i in range(self.dim):
                 for j in range(i+1, self.dim):
                     newScore = evaluate(S["chromosome"], S["score"], i, j)
@@ -21,6 +22,31 @@ class Opt:
                     if S["score"] > newScore:
                         S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
                         S["score"] = newScore
-                        
+
         print("Acabandoo un 2opt")
         return bestIndividual
+
+    def twoOptBalwin (self, initialIndividual):
+        bestIndividual = None
+        S = initialIndividual.copy()
+
+        evaluate = self.evaluator.mutationScoreOpt
+        bestIndividual = S.copy()
+        bestIndividual["score"] = 42.0
+
+        '''
+        while (S != bestIndividual):
+            bestIndividual = S.copy()
+
+
+            for i in range(self.dim):
+                for j in range(i+1, self.dim):
+                    newScore = evaluate(S["chromosome"], S["score"], i, j)
+
+                    if S["score"] > newScore:
+                        S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
+                        S["score"] = newScore
+
+        '''
+        print("Acabandoo un 2opt")
+        return bestIndividual["score"]
