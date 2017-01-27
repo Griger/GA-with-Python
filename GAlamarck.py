@@ -76,9 +76,16 @@ class AGL:
 
         pool.close()
         '''
-        parent = np.load("lamarck20BestGenerations/223.npy")
+        parent = np.load("lamarck20BestGenerations/346.npy")
 
         for individual in parent:
+            individual["score"] = self.evaluator.score(individual["chromosome"])
+
+        nRegenerations = 30
+        nGenerationsWihtoutChange = 0
+
+        for individual in parent[-nRegenerations:]:
+            individual["chromosome"] = np.random.permutation(n)
             individual["score"] = self.evaluator.score(individual["chromosome"])
 
         parent.sort(order = "score", kind = 'mergesort')
@@ -95,7 +102,7 @@ class AGL:
 
             selectedPairs = zip(selectedParentIdx[0:2*nCrosses:2], selectedParentIdx[1:2*nCrosses:2])
 
-            #cross'''
+            #cross
             children = np.zeros(popSize, dtype = dataType)
             crossPoints = np.random.randint(n, size = 2*nCrosses)
 
@@ -128,18 +135,31 @@ class AGL:
             parent[:nOpts] = pool.map(opt.twoOpt, parent[:nOpts]) #apply 2opt to the best individuals
             pool.close()
 
-            offset = 224
+            offset = 347
             parent.sort(order = "score", kind = 'mergesort')
             print("Score mejor padre en la generación", i+offset, int(parent[0]["score"]))
 
             bestGenerationScore = parent[0]["score"]
 
             if (bestScore > bestGenerationScore):
+                nGenerationsWihtoutChange = 0
                 bestScore = bestGenerationScore
                 end = time.time()
                 elapsedTime = end - start
                 fileName = baseName + "iter" + str(offset+i) + "score" + str(int(bestGenerationScore)) + "time" + str(elapsedTime) + ".npy"
                 np.save(fileName, parent[0])
+            elif bestScore == bestGenerationScore:
+                nGenerationsWihtoutChange += 1
+
+                if nGenerationsWihtoutChange == 10: #regenerate poblation
+                    nGenerationsWihtoutChange = 0
+
+                    for individual in parent[-nRegenerations:]:
+                        individual["chromosome"] = np.random.permutation(n)
+                        individual["score"] = self.evaluator.score(individual["chromosome"])
+
+                    parent.sort(order = "score", kind = 'mergesort')
+
 
             if (i % 10 == 0):
                 fileName = "lamarck20BestGenerations/" + str(offset+i) + ".npy"
