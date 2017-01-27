@@ -88,6 +88,13 @@ class AGL:
         #     individual["chromosome"] = np.random.permutation(n)
         #     individual["score"] = self.evaluator.score(individual["chromosome"])
 
+        nRegenerations = 30
+        nGenerationsWihtoutChange = 0
+
+        for individual in parent[-nRegenerations:]:
+            individual["chromosome"] = np.random.permutation(n)
+            individual["score"] = self.evaluator.score(individual["chromosome"])
+
         parent.sort(order = "score", kind = 'mergesort')
         #bestScore = parent[0]["score"]
 
@@ -162,5 +169,6 @@ class AGL:
             # if (i % 10 == 0):
             #     fileName = "lamarck20BestGenerations/" + str(offset+i) + ".npy"
             #     np.save(fileName, parent)
+
 
         return parent[0]["chromosome"], parent[0]["score"]
