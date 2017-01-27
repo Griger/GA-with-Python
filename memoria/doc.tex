@@ -71,7 +71,7 @@
 
 \section{Introducción}
 
-En esta práctica nos enfrentamos al problema de la asignación cuadrática (QAP), empleando para su resolución algoritmos genéticos. Nos enfrentamos a diversos problemas, aunque el que realmente nos ocupa es el tai256c ya que es el que se emplea para establecer el ranking de puntuación de la parte de competición de esta práctica.\\
+En esta práctica nos enfrentamos al problema de la asignación cuadrática (QAP), empleando para su resolución algoritmos genéticos. Nos enfrentamos a diversos problemas, aunque el que realmente nos ocupa es el \code{tai256c} ya que es el que se emplea para establecer el ranking de puntuación de la parte de competición de esta práctica.\\
 
 Este problema tiene un espacio de búsqueda de 256! elementos con lo que es evidente que una estrategia de fuerza bruta no es viable. Por lo tanto una solución basada en algoritmos genéticos es una buena aproximación para esta resolución, pese a que otros algoritmos son los que han obtenido la mejor solución al problema tai256c. Veamos cómo hemos abordado esta práctica.\\
 
@@ -126,12 +126,20 @@ Y aquí vemos cómo, una vez que fijamos la probabilidad de mutación a la mejor
 \includegraphics[width = \textwidth]{img/graphics/GAbaldwinPC07.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAbaldwinFinal.pdf}
 
+Aquí sucede algo extraño y es que cuando la probabilidad de cruce es alta, 0.7, entonces es cuando mejor funciona el algoritmo si no hacemos ningún tipo de mutación. Esto puede implicar que los mejores individuos de la población llegan, a través del proceso de optimización, a buenas soluciones y que participando en el corte con más frecuencia dan lugar a muy buenas soluciones. Además nos bastacon la variabilidad de que nos da el cruce, de hecho el mutar las soluciones hace que pierdan sus buenas facultades.\\
+
+No obstante hemos de señalar que estamos aplicando la variante baldwiniana de una forma extraña al sólo calcular el fitness ``prometedor'' para ciertos elementos de la población y no para todos. Como lo aplicamos sobre los mejores elementos en principio no debería tener un comportamiento muy distinto al algoritmo genérico más que reordenar estos mejores individuos en función de su potencial. Desgraciadamente debido a la mala elección en el lenguaje de programación, como ya hemos dicho, no hemos podido aplicar el proceso de optimización a todos los individuos de la población.
+
 \includegraphics[width = \textwidth]{img/graphics/GAlamarckPC01.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAlamarckPC05.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAlamarckPC07.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAlamarckFinal.pdf}
 
+Aquí lo que apreciamos es que, dado que el espacio de búsqueda es más pequeño que en el \code{tai256c}, el aplicar el lamarckiano puede abocarnos a un mínimo local muy rápidamente, de hecho en todos los casos, para una probabilidad de corte, las probabilidades de mutación más altas son las que dan lugar a mejores resultados.
+
 \includegraphics[width = \textwidth]{img/graphics/final.pdf}
+
+Finalmente aquí vemos una comparativa de los tres algoritmos. Vemos como es el lamarckiano el que obtiene mejores resultados con diferencia, esto tiene sentido ya que realiza un proceso de explotación más intenso y las soluciones que encuentra en durante este proceso las incorpora en la población. En cambio como ya adelantemos anteriormente el comportamiento del algoritmo genérico y el baldwiniano es muy similar, de hecho encontramos que es el genérico el que mejor se comporta. Esto puede señalar que el fitness potencial que le asociamos a los individuos de la población no es tan buen indicativo como podríamos pensar, o que no es suficiente con calcularlo para sólo los 20 individuos de la población.
 
 \begin{center}
 \begin{table}[H]
@@ -187,7 +195,24 @@ En primer lugar probamos a aplicarlo sólamente una vez por generación y luego 
 \end{table}
 \end{center}
 
-A la luz de estos experimentos decidimos pasar a hacer un uso más intensivo de la variante lamarckaina aplicando el proceso de optimización sólo a los 20 mejores individuos de la población, ya hemos dicho que por el tiempo de cómputo no podíamos permitirnos el aplicar este algoritmo sobre todos los elementos de la misma.
+A la luz de estos experimentos decidimos pasar a hacer un uso más intensivo de la variante lamarckaina aplicando el proceso de optimización sólo a los 20 mejores individuos de la población, ya hemos dicho que por el tiempo de cómputo no podíamos permitirnos el aplicar este algoritmo sobre todos los elementos de la misma. Para poder realizar diversas iteraciones del algoritmo lo que hicimos es ir almacenando las generaciones que se iban generando cada 10 de modo que pudiésemos retomar el algoritmo allí donde lo dejamos la última vez que paramos el algoritmo, también almacenamos las mejores soluciones que vamos encontrando.\\
+
+En total se han realizado unas 407 iteraciones del algoritmo que son las que tenemos almacenadas en la carpeta \archive{lamarck20BestGenerations}. Es fácil deducir los bloques en los que se realizaron las distintas iteraciones ya que para poder tener correctamente las generaciones que se habían realizado iniciábamos la cuenta con el número de iteración siguiente a la última realizada, con lo que la última cifra del número de la generación nos da el bloque en el que se realizó. Así las iteraciones se realizaron en los siguiente bloques:
+
+\begin{itemize}
+\item 0-60
+\item 61-101
+\item 102-122
+\item 123-223
+\item 224-264 (aquí se encontró la mejor solución)
+\item 265-315
+\item 316-346
+\item 347-407
+\end{itemize}
+
+Comenzamos con una probabilidad de cruce de 0.3 y una de mutación de 0.1, con esto llegamos a una solución con un score de \textbf{44811968}, y seguimos algunas generaciones más con el algoritmo en estas condiciones. No obstante debido a que el algoritmo parecía estar encantado decidimos entorno a la iteración 123 bajar la probabilidad de mutación a 0.02 y subir la de cruce a 0.5, tras algunas generaciones más, en la 228 encontramos la mejor solución, con un fitness de \textbf{44804670}. Se pueden consultar otras soluciones encontradas en la carpeta \archive{resultsLamarck20Best}, en el nombre del archivo tenemos las probabilidades empleadas (PC y PM), el tamaño de la población, que siempre es 100 (PS), la iteración en la que se encontró, el tiempo de ejecución (aunque no es registra el tiempo total invertido durante todos los bloques) y el fitness de la solución (score).\\
+
+Nuevamente el algoritmo se quedó estancando y en la iteración 315 aumentamos las probabilidades de cruce y mutación (0.7 y 0.05 respectivamente) para intentar salir de este óptimo local sin ningún resultado. Y en la iteración 346 volvimos a cambiar las probabilidades a unas más bajas (0.3 y 0.01) e introdujimos un mecanismo por el que cada 10 iteraciones sin encontrar una mejor solución, se cambian los 30 peores individuos de la población (el 30\%) por unos nuevos individuos aleatorios para tratar de dar una mayor diversidad a la búsqueda, pero tampoco hemos podido obtener una mejor solución. El mecanismo de almacenamiento de generaciones y de reinicialización de la población se encuentran comentados en el código de \archive{GAlamarck.py}.
 
 
 \end{document}
