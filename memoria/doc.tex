@@ -119,6 +119,68 @@ En estas gráficas podemos observar algo y es que en un principio, para una mism
 
 \includegraphics[width = \textwidth]{img/graphics/GAgenericFinal.pdf}
 
-Y aquí vemos cómo, una vez que fijamos la probabilidad de mutación a la mejor de las 4 probadas, cuánto menor es la probabilidad de cruce mejor es el resultado que podemos obtener. El cruce no deja de ser otra fuente de diversidad en nuestro algoritmo, con lo que este hecho puede darse por una razón similar a la que hemos expuesto anteriormente para la probabilidad de mutación.
+Y aquí vemos cómo, una vez que fijamos la probabilidad de mutación a la mejor de las 4 probadas, cuánto menor es la probabilidad de cruce mejor es el resultado que podemos obtener. El cruce no deja de ser otra fuente de diversidad en nuestro algoritmo, con lo que este hecho puede darse por una razón similar a la que hemos expuesto anteriormente para la probabilidad de mutación.\\
+
+\includegraphics[width = \textwidth]{img/graphics/GAbaldwinPC01.pdf}
+\includegraphics[width = \textwidth]{img/graphics/GAbaldwinPC05.pdf}
+\includegraphics[width = \textwidth]{img/graphics/GAbaldwinPC07.pdf}
+\includegraphics[width = \textwidth]{img/graphics/GAbaldwinFinal.pdf}
+
+\begin{center}
+\begin{table}[H]
+\centering
+\caption{Tiempos de los experimentos anteriores (segundos)}
+\label{my-label}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\rowcolor[HTML]{FFFC9E} 
+\textbf{Parámetros}                 & \multicolumn{1}{c|}{\cellcolor[HTML]{FFFC9E}\textbf{Genérico}} & \multicolumn{1}{c|}{\cellcolor[HTML]{FFFC9E}\textbf{Baldwiniano}} & \multicolumn{1}{c|}{\cellcolor[HTML]{FFFC9E}\textbf{Lamarckiano}} \\ \hline
+PC 0.1 PM 0                         & \multicolumn{1}{c|}{0.1965632438659668}                        & \multicolumn{1}{c|}{229.46095776557922}                           & \multicolumn{1}{c|}{40.006726026535034}                           \\ \hline
+PC 0.1 PM 0.01                      & \multicolumn{1}{c|}{1.176302433013916}                         & \multicolumn{1}{c|}{237.49341559410095}                           & \multicolumn{1}{c|}{41.53278636932373}                            \\ \hline
+PC 0.1 PM 0.05                      & \multicolumn{1}{c|}{4.538119792938232}                         & \multicolumn{1}{c|}{239.02621841430664}                           & \multicolumn{1}{c|}{118.29913687705994}                           \\ \hline
+\multicolumn{1}{|c|}{PC 0.1 PM 0.1} & \multicolumn{1}{c|}{8.739510536193848}                         & \multicolumn{1}{c|}{238.1887505054474}                            & \multicolumn{1}{c|}{161.66303634643555}                           \\ \hline
+PC 0.5 PM 0                         & 0.7903800010681152                                             & 288.2191894054413                                                 & 40.6226110458374                                                  \\ \hline
+PC 0.5 PM 0.01                      & 1.835338830947876                                              & 232.97396326065063                                                & 63.90303945541382                                                 \\ \hline
+PC 0.5 PM 0.05                      & 5.205590009689331                                              & 231.69750213623047                                                & 132.511292219162                                                  \\ \hline
+PC 0.5 PM 0.1                       & 9.499826192855835                                              & 233.9859938621521                                                 & 175.75801801681519                                                \\ \hline
+PC 0.7 PM 0                         & 1.2097265720367432                                             & 303.1206007003784                                                 & 81.32161521911621                                                 \\ \hline
+PC 0.7 PM 0.01                      & 2.1152844429016113                                             & 241.62352299690247                                                & 108.90502667427063                                                \\ \hline
+PC 0.7 PM 0.05                      & 5.394533395767212                                              & 241.96477484703064                                                & 163.41942262649536                                                \\ \hline
+PC 0.7 PM 0.1                       & 9.53583288192749                                               & 239.10191750526428                                                & 190.24293994903564                                                \\ \hline
+\end{tabular}
+\end{table}
+\end{center}
+
+Lo primero que apreciamos en la tabla anterior es algo evidente, cuantos más cruces y mutaciones se realicen mayor será el tiempo de ejecución del algoritmo. Como podemos ver el algoritmo balwiniano tarda más que el lamarckiano, teóricamente deberían tardar lo mismo ya en ambos casos aplicamos el proceso de optimización a los 20 mejores elementos de la población y lo que cambia en principio es simplemente la información que tomamos de ese proceso. No obstante según se ha implementado el algoritmo baldwiniano conlleva bastante más cálculos que el lamarckiano y por esto tenemos esta diferencia de tiempos.\\
+
+Lo que hacemos es aplicar el algoritmo de optimización a los 20 mejores elementos de la población y en lugar de preservar los cálculos realizados, debido a una mala implementación, recalculo los fitness originales de los padres que han sido optimizados para las fases de elitismo.\\
+
+Hay que señalar que para este experimento se han empleado dos implementaciones del opt distintas a la empleada para el problema de competición, se ha observado que si en lugar de aplicar la función que usa la factorización de la función de fitness calculamos el score de los individuos de la forma original se tarda menos en ambos casos. No obstante hemos probado a hacer esto sobre un individuo del \code{tai256c} y hemos notado que se tarda prácticamente lo mismo, con lo cual hemos optado por continuar ejecutando el algoritmo con el código para el 2opt que teníamos originariamente para ese problema (el algoritmo se está ejecutando en el sobremesa sobre el problema de la competición mientras realizamos estos experimentos menores en el portátil). También puede haber variaciones en los tiempos de estos experimentos debido a que hemos empleado el portátil mientras se ejecutaban.\\
+
+Además de hacer estos experimentos más pequeños para poder estudiar el comportamiento de los algoritmos también hemos realizado algunos experimentos orientados a la competición, es decir, sobre el problema \code{tai256c}. En concreto nos centramos en probar la variante lamarckiana.\\
+
+En primer lugar probamos a aplicarlo sólamente una vez por generación y luego 10. Luego pasamos a realizar experimentos aplicando el 2opt a sólo los 10 peores individuos de la población obteniendo un resultado de 49900144 en dos generaciones, con una probabilidad de mutación de 0.1 y una de cruce de 0.3. Dado que la ejecución del algoritmo era muy lenta no realizamos una experimentación tan extensa. Una vez que descrubrimos el uso del módulo \code{multiprocessing} entonces se realizaron los siguientes experimentos:
+
+\begin{center}
+\begin{table}[H]
+\centering
+\caption{Primeros experimentos con Lamarck}
+\label{my-label}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\rowcolor[HTML]{FFFC9E} 
+\textbf{Fitness}               & \textbf{2-opt se aplica a}  & \textbf{\begin{tabular}[c]{@{}c@{}}Prob.\\ cruce\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Prob.\\ mutación\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Generaciones\\ completadas\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Estancado \\ desde la\\ generación\end{tabular}} \\ \hline
+44878392                       & A 8 individuos al azar      & 0.3                                                            & 0.1                                                               & 12                                                                          & 2                                                                                   \\ \hline
+44862524                       & A 8 individuos al azar      & 0.5                                                            & 0.2                                                               & 50                                                                          & 21                                                                                  \\ \hline
+44890208                       & A los 8 peores individuos   & 0.5                                                            & 0.2                                                               & 21                                                                          & 0                                                                                   \\ \hline
+\multicolumn{1}{|c|}{44854840} & A los 8 peores individuos   & 0.3                                                            & 0.1                                                               & 33                                                                          & 9                                                                                   \\ \hline
+\multicolumn{1}{|c|}{44845300} & A los 8 mejores individuos  & 0.3                                                            & 0.1                                                               & 52                                                                          & 33                                                                                  \\ \hline
+\multicolumn{1}{|c|}{44821204} & A los 20 mejores individuos & 0.3                                                            & 0.1                                                               & 36                                                                          & 34                                                                                  \\ \hline
+\end{tabular}
+\end{table}
+\end{center}
+
+A la luz de estos experimentos decidimos pasar a hacer un uso más intensivo de la variante lamarckaina aplicando el proceso de optimización sólo a los 20 mejores individuos de la población, ya hemos dicho que por el tiempo de cómputo no podíamos permitirnos el aplicar este algoritmo sobre todos los elementos de la misma.
+
 
 \end{document}

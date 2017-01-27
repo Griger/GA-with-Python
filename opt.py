@@ -23,8 +23,29 @@ class Opt:
                         S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
                         S["score"] = newScore
 
-        print("Acabandoo un 2opt")
         return bestIndividual
+
+    # def twoOpt (self, initialIndividual):
+    #     bestIndividual = None
+    #     S = initialIndividual.copy()
+    #
+    #     evaluate = self.evaluator.score
+    #
+    #     while (S != bestIndividual):
+    #         bestIndividual = S.copy()
+    #
+    #
+    #         for i in range(self.dim):
+    #             for j in range(i+1, self.dim):
+    #                 S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
+    #                 newScore = evaluate(S["chromosome"])
+    #
+    #                 if S["score"] > newScore:
+    #                     S["score"] = newScore
+    #                 else:
+    #                     S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
+    #
+    #     return bestIndividual
 
     def twoOptBalwin (self, initialIndividual):
         bestIndividual = None

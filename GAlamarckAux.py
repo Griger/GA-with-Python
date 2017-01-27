@@ -46,7 +46,7 @@ class AGL:
         mutationProb = parameters.mutationProbability
         nOpts = 20
 
-        baseName = "dataGAlamarck/PC" + str(crossProb) + "PM" + str(mutationProb)
+        baseName = "dataGAlamarck/ZPC" + str(crossProb) + "PM" + str(mutationProb)
         results = np.zeros(100, dtype = np.int64)
 
         nCrosses = ceil(popSize/2.0 * crossProb)
@@ -65,7 +65,12 @@ class AGL:
             individual["chromosome"] = np.random.permutation(n)
             individual["score"] = self.evaluator.score(individual["chromosome"])
 
+        start = time.time()
+        opt.twoOpt(parent[0])
+        end = time.time()
+        print("Se ha tardado:", end-start, "segundos.")
 
+        ''' #TODO
         #optIdx = random.sample(range(popSize), nOpts) #apply 2opt to random individuals
         parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the worst individuals
         pool = multiprocessing.Pool(processes=8)
@@ -125,4 +130,6 @@ class AGL:
             results[i] = parent[0]["score"]
 
         np.save(baseName + "time" + str(time.time() - start) + ".npy", results)
+        ''' #TODO
+
         return parent[0]["chromosome"], parent[0]["score"]
