@@ -33,10 +33,11 @@ class AGB:
         if i > j:
             i,j = j,i
 
-        individual["score"] = self.evaluator.mutationScore(individual["chromosome"], individual["score"], i, j)
         individual["chromosome"][i], individual["chromosome"][j] = individual["chromosome"][j], individual["chromosome"][i]
+        individual["score"] = self.evaluator.score(individual["chromosome"])
 
-    def AGL (self, parameters):
+
+    def AGB (self, parameters):
         print("Running AGB over a", self.dim, "dimension problem")
 
         start = time.time()
@@ -45,14 +46,14 @@ class AGB:
         crossProb = parameters.crossProbability
         mutationProb = parameters.mutationProbability
 
-        bestScore = float('inf')
-        baseName = "resultsLamarck20Best/PS" + str(popSize) + "CP" + str(crossProb) + "MP" + str(mutationProb)
+        baseName = "dataGAbalwin/PC" + str(crossProb) + "PM" + str(mutationProb)
+        results = np.zeros(100, dtype = np.int64)
 
         nCrosses = ceil(popSize/2.0 * crossProb)
         nMutations = ceil(popSize * n * mutationProb)
 
         sizeChromosomeString = str(n) + 'int'
-        dataType = np.dtype([('chromosome', sizeChromosomeString), ('score', np.float32)])
+        dataType = np.dtype([('chromosome', sizeChromosomeString), ('score', np.int64)])
 
         #create initial poblation
         parent = np.zeros(popSize, dtype = dataType)
@@ -65,22 +66,17 @@ class AGB:
 
         nOpts = 20
 
-        #optIdx = random.sample(range(popSize), nOpts) #apply 2opt to random individuals
-        parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the worst individuals
+        parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the best individuals
+
         pool = multiprocessing.Pool(processes=8)
-
-        print("Score antes:", parent[:nOpts]["score"]) #TODO
-
-        parent[:nOpts]["score"] = pool.map(opt.twoOptBalwin, parent[:nOpts]) #apply 2opt to the best individuals
-        #parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
-        #parent[optIdx] = pool.map(opt.twoOpt, parent[optIdx]) #apply 2opt to random individuals
-
-        print("Score después:", parent[:nOpts]["score"]) #TODO
+        scoresOpt = pool.map(opt.twoOptBalwin, parent[:nOpts]) #apply 2opt to the best individuals
+        parent[:nOpts]["score"] = scoresOpt
         pool.close()
 
         parent.sort(order = "score", kind = 'mergesort')
-        '''
-        for i in range(1000):
+
+
+        for i in range(100):
             #selection by binary tournament
             selectedParentIdx = np.empty(popSize, dtype = np.int32)
 
@@ -106,36 +102,32 @@ class AGB:
                 self.mutate(children[idx], mutantGenes[2*genIdx], mutantGenes[2*genIdx+1])
 
             #replacement with elitism
+            for individual in children:
+                individual["score"] = self.evaluator.score(individual["chromosome"])
+
             children.sort(order = "score", kind = 'mergesort')
+
+            for individual in parent[:nOpts]:
+                individual["score"] = self.evaluator.score(individual["chromosome"])
+
+            parent.sort(order = "score", kind = 'mergesort')
 
             if children["score"][0] > parent["score"][0]:
                 children[-1] = parent[0]
 
             parent = children
 
-            #optIdx = random.sample(range(popSize), nOpts) #apply 2opt to random individuals
             parent.sort(order = "score", kind = 'mergesort') #apply 2opt to the worst individuals
+            print("Score mejor padre en la generación", i, int(parent[0]["score"]))
+            results[i] = parent[0]["score"]
 
             pool = multiprocessing.Pool(processes=8)
-            #parent[optIdx] = pool.map(opt.twoOpt, parent[optIdx]) #apply 2opt to random individuals
-            #parent[-nOpts:] = pool.map(opt.twoOpt, parent[-nOpts:]) #apply 2opt to the worst individuals
-            parent[:nOpts] = pool.map(opt.twoOpt, parent[:nOpts]) #apply 2opt to the best individuals
+            scoresOpt = pool.map(opt.twoOptBalwin, parent[:nOpts]) #apply 2opt to the best individuals
+            parent[:nOpts]["score"] = scoresOpt
             pool.close()
 
             parent.sort(order = "score", kind = 'mergesort')
-            print("Score mejor padre en la generación", i, float(parent[0]["score"]))
 
-            bestGenerationScore = parent[0]["score"]
+        np.save(baseName + "time" + str(time.time() - start) + ".npy", results)
 
-            if (bestScore > bestGenerationScore):
-                bestScore = bestGenerationScore
-                end = time.time()
-                elapsedTime = end - start
-                fileName = baseName + "iter" + str(i) + "score" + str(float(bestGenerationScore)) + "time" + str(elapsedTime) + ".npy"
-                np.save(fileName, parent[0])
-
-            if (i % 10 == 0):
-                fileName = "lamarck20BestGenerations/" + str(i) + ".npy"
-                np.save(fileName, parent)
-        '''
-        return parent[0]["chromosome"], parent[0]["score"]
+        return parent[0]["chromosome"], self.evaluator.score(parent[0]["chromosome"])

@@ -24,6 +24,7 @@
 \definecolor{light-gray}{gray}{0.85}
 \definecolor{comment-gray}{gray}{0.65}
 \definecolor{light-green}{rgb}{0.66,1,0.5}
+\definecolor{light-yellow}{rgb}{1,1,0.4}
 
 % Default fixed font does not support bold face
 \DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{8} % for bold
@@ -44,6 +45,7 @@
 }
 %--------------------------------------------------------------------------------
 
+\newcommand{\emp}[1]{\sethlcolor{light-yellow}\hl{\texttt{#1}}} %Comando para poner código inline
 \newcommand{\code}[1]{\sethlcolor{light-gray}\hl{\texttt{#1}}} %Comando para poner código inline
 \newcommand{\archive}[1]{\sethlcolor{light-green}\hl{\texttt{#1}}} %Comando para resaltar nombres de archivos
 \renewcommand\tablename{Tabla} %Cambiar el nombre de las tablas
@@ -79,13 +81,44 @@ También se considerarán dos variables meméticas del algoritmos genéticos usu
 
 Para la implementación de los algoritmos necesarios para esta práctica nuevamente hemos optado por \code{Python 3.6}, en esta ocasión sin hacer uso de la librería Theano para hacer cálculos matrices optimizados, pese a que hemos tenido algunos problemas de rendimiento que se detallarán más adelante, en un inicio no se consideró necesario y por tanto no se ha incorporado esta librería.\\
 
-Sí que hemos hecho uso de \code{Numpy} ya que para los cálculos matrices resulta mucho más eficiente que implementar el bucle doble pertinente, de hecho ya veremso el problema que nos ha supuesto el uso de un bucle doble en nuestro código.
+Sí que hemos hecho uso de \code{Numpy} ya que para los cálculos matrices resulta mucho más eficiente que implementar el bucle doble pertinente, de hecho ya veremso el problema que nos ha supuesto el uso de un bucle doble en nuestro código. Señalar que la versión de este módulo es \code{Numpy 1.11.3}, en el ordenador de sobremesa teníamos otra versión anterior y el programa no funcionaba correctamente, en concreto al crear con la función \code{random.permutation}, los resultados no eran correctos.
 
-\subsection{Representación, operador de cruce y mutación}
+\subsection{Elementos del algoritmo genético básico}
 
+La \textbf{representación} que hemos empleado para los cromosomos es la usual, una permutación de n elementos siendo n el número de localizaciones y unidades que componen el problema. Así, si nos ceñimos al problema original del QAP, cada elementos de la permutación sería la localización en la que situaríamos la unidades correspondiente a ese índice de la permutación.\\
 
+El \textbf{operador de cruce} empleado ha sido el OX de uso muy extendido. Otro operador de cruce muy usado es el denominado PMX pero hemos optado por este primero por la facilidad de su implementación. Por otro lado el \textbf{operador de mutación} es simplemente el intercambio en de valores entre dos elementos de la permutación.\\
+
+Como operador de selección empleamos torneo binario, para ello aprovechamos que ordenamos los padres de modo que el generar números aleatorios para seleccionar los padres lo hacemos generando un número aleatorio y a continuación otro menor o igual que él, que será el padre que seleccionemos para cruce como resultado del torneo. Hablaremos de esto en la siguiente subsección.
 
 \subsection{Algunas consideraciones}
 
+\begin{enumerate}
+\item Un problema que hemos encontrado es que durante la ejecución del algoritmo, en concreto el lamarckiano, que es el que hemos empleado para tratar de obtener una buena solución en el tai256c, se producían fluctuaciones en el fitness de las soluciones. Esto creo que se debe a haber empleado floats para almacenar las soluciones así como las matrices del problema con el objetivo de hacer un código más genérico. No obstante se cambió el código de modo que ahora se emplean enteros de 64 bits y no parece que se dé este problema.
+\item Debido al mecanismo empleado para leer las matrices de los ficheros de datos es necesario que haya una línea en blanco entre cada uno de los elementos del problema; las dos matrices y la dimensión del problema. Así por ejemplo se han realizado estas modificaciones en los archivos de tai que se han empleado para la realización de esta práctica.
+\item Otro problema que hemos tenido ha sido la elección del lenguaje de programación, como ya dijo el profesor Python puede resultar lento, peso a que este problema podemos solventarlo haciendo uso de librerías externas como Numpy, no obstante el bucle doble, que se ha escrito para programar el algoritmo 2opt hace que una ejecución de este algoritmo sobre una instancia del tai256 duré más de un minuto, con lo cuál en una población de 100 individuos que es la que se ha considerado en las experimentaciones, esto se traduciría en un mínimo de 100 minutos por generación algo que no se podía abordar si queríamos obtener resultados tras varias generaciones del algoritmo.\\
+
+En ocasiones las variantes lamarckiana y balwiniana se basan en aplicar el proceso de optimización sólo a algunos elementos de la población, y esta ha sido la opción que hemos elegido. En concreto, y tras alguna experimentación que comentaremos en la sección siguiente, aplicamos los procesos de optimización a los 20 mejores individuos de la población. Además se ha hecho uso del módulo \code{multiprocessing} que nos permite realizar cálculos en paralelo en cada uno de los núcleos (lógicos) de nuestro ordenador. Así en nuestro caso podemos realizar hasta 8 proceso de optimización simultáneamente, reduciendo así el tiempo tomado por cada generación del algoritmo.
+
+\item Teniendo en cuenta que habrá ciertos operadores de cruce o probabilidades de cruce y mutación que exploren mejor el espacio de búsqueda, también es cierto que influye el azar en este tipo de algoritmos. Así que para poder ejecutar un gran número de ejecuciones del algoritmo sobre el mismo conjunto de datos lo que hemos hecho ha sido almacenar, tanto las mejores soluciones encontradas durante el proceso, como las generaciones producidas, cada 10. Así en un momento dado se puede parar el algoritmo y retomarlo en el punto en el que se dejó.\\
+
+Es claro que para poder repetir los experimentos no basta con fijar una semilla aleatoria al inicio, habrá que realizar las iteraciones en las mismas ejecuciones en el que se realizaron, es decir, se repetirían las ejecuciones del algoritmo en los mismos bloques en los que se realizaron originalmente, de modo que la semilla aleatoria siempre dé los mismo resultados. Los archivos con las generaciones podemos encontrarlo en el directorio \archive{lamarck20BestGenerations}. Y el código relativo a la carga de una generación almacenada y el almacenamiento de las nuevas producidas está comentado en el archivo \archive{GAlamarck.py}.
+
+\item En cuanto a la generación de número aleatorios para el cruce y la mutación lo que hacemos es algo que aprendimos en Metaheurísticas. Dado que la generación de números aleatorios puede ser muy costosa, en lugar de generar un número aleatorio para por ejemplo cada padre y cromosoma para ver si lo mutamos o no. Lo que hacemos es calcular cuántos cruces y mutaciones se realizarán en media en cada generación y hacemos siempre este número fijo. De modo que sólo hemos de generar esta cantidad fija de números aleatorios en cada generación y no la cantidad que se generaría si lo hiciésemos de la forma usual. Por esto en el código tenemos las variables \code{nCrosses} y \code{nMutations}.
+\end{enumerate}
+
 \section{Experimentación}
+
+Debido a los problemas debidos al tiempo de cómputo necesario tomado por los algoritmos se ha decidido realizar una comparativa de los distintos algoritmos sobre un problema más pequeño el \code{tai60a}. Comenzamos en primer lugar a realizar experimentos sobre un grid de parámetros para el algoritmo genético básico, experimentos que se repetirán para los dos variantes de este algoritmo.
+
+\includegraphics[width = \textwidth]{img/graphics/GAgenericPC01.pdf}
+\includegraphics[width = \textwidth]{img/graphics/GAgenericPC05.pdf}
+\includegraphics[width = \textwidth]{img/graphics/GAgenericPC07.pdf}
+
+En estas gráficas podemos observar algo y es que en un principio, para una misma probabilidad de cruce (que sería en media el número de cruces que haríamos por generación) es malo tanto una probabilidad de mutación baja, hemos probado a no poner ninguna mutación y con lo cual se observa que el algoritmo se queda estancado. Como una probabilidad de mutación demasiado alta, en este caso las probabilidades 0.05 y 0.1 han resultado perjudiciales para la exploración del algoritmo. Este hecho puede deberse a que lo que hacemos con un número de mutaciones muy elevado es perder las propiedades o genes buenos de los cromosomas de nuestra población, no siendo capaces de encontrar una mejor solución a partir de ellos. Así la mejor probabilidad para este problema, de las 4 que hemos probado, es 0.1.
+
+\includegraphics[width = \textwidth]{img/graphics/GAgenericFinal.pdf}
+
+Y aquí vemos cómo, una vez que fijamos la probabilidad de mutación a la mejor de las 4 probadas, cuánto menor es la probabilidad de cruce mejor es el resultado que podemos obtener. El cruce no deja de ser otra fuente de diversidad en nuestro algoritmo, con lo que este hecho puede darse por una razón similar a la que hemos expuesto anteriormente para la probabilidad de mutación.
+
 \end{document}

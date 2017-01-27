@@ -19,22 +19,24 @@ genericParameters = namedtuple("genericParameters", "populationSize crossProbabi
 np.random.seed(12345678)
 
 parameters = genericParameters(100, 0.5, 0.02)
-problemDim, weightMtx, distanceMtx = rd.readData("tai256c.dat")
+problemDim, weightMtx, distanceMtx = rd.readData("tai60a.dat")
 
 ag = AG.AG(problemDim, weightMtx, distanceMtx)
 agl = AGL.AGL(problemDim, weightMtx, distanceMtx)
 agb = AGB.AGB(problemDim, weightMtx, distanceMtx)
 
 
+for cp in [0.1, 0.5, 0.7]:
+    for mp in [0, 0.01, 0.05, 0.1]:
+        parameters = genericParameters(100, cp, mp)
+        agb.AGB(parameters)
 
+'''
 start = time.time()
-print(agl.AGL(parameters))
+print(agb.AGB(parameters))
 end = time.time()
 
 print("Se han tardado", end-start, "segundos para una generación.")
-
-
-'''
 printSol("resultsLamarck20Best/PS100CP0.3MP0.1iter37score44811992.0time10933.00833106041.npy")
 problemDim, weightMtx, distanceMtx = rd.readData("tai256c.dat")
 evaluator = ev.Evaluator(problemDim, weightMtx, distanceMtx)

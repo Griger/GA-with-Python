@@ -30,23 +30,21 @@ class Opt:
         bestIndividual = None
         S = initialIndividual.copy()
 
-        evaluate = self.evaluator.mutationScoreOpt
-        bestIndividual = S.copy()
-        bestIndividual["score"] = 42.0
+        evaluate = self.evaluator.score
 
-        '''
         while (S != bestIndividual):
             bestIndividual = S.copy()
 
 
             for i in range(self.dim):
                 for j in range(i+1, self.dim):
-                    newScore = evaluate(S["chromosome"], S["score"], i, j)
+                    S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
+                    newScore = evaluate(S["chromosome"])
 
                     if S["score"] > newScore:
-                        S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
                         S["score"] = newScore
+                    else:
+                        S["chromosome"][i], S["chromosome"][j] = S["chromosome"][j], S["chromosome"][i]
 
-        '''
-        print("Acabandoo un 2opt")
+        #print("Devuelvo:", bestIndividual["score"])
         return bestIndividual["score"]
