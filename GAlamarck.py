@@ -39,7 +39,7 @@ class AGL:
     def AGL (self, parameters):
         print("Running AGL over a", self.dim, "dimension problem")
 
-        start = time.time()
+        # start = time.time()
         n = self.dim
         popSize = parameters.populationSize
         crossProb = parameters.crossProbability
@@ -88,17 +88,10 @@ class AGL:
         #     individual["chromosome"] = np.random.permutation(n)
         #     individual["score"] = self.evaluator.score(individual["chromosome"])
 
-        nRegenerations = 30
-        nGenerationsWihtoutChange = 0
-
-        for individual in parent[-nRegenerations:]:
-            individual["chromosome"] = np.random.permutation(n)
-            individual["score"] = self.evaluator.score(individual["chromosome"])
-
         parent.sort(order = "score", kind = 'mergesort')
         #bestScore = parent[0]["score"]
 
-        for i in range(1000):
+        for i in range(100):
             #selection by binary tournament
             selectedParentIdx = np.empty(popSize, dtype = np.int32)
 

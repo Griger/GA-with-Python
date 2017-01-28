@@ -75,60 +75,64 @@ En esta práctica nos enfrentamos al problema de la asignación cuadrática (QAP
 
 Este problema tiene un espacio de búsqueda de 256! elementos con lo que es evidente que una estrategia de fuerza bruta no es viable. Por lo tanto una solución basada en algoritmos genéticos es una buena aproximación para esta resolución, pese a que otros algoritmos son los que han obtenido la mejor solución al problema tai256c. Veamos cómo hemos abordado esta práctica.\\
 
-También se considerarán dos variables meméticas del algoritmos genéticos usual, las variantes balwiniana y lamarckiana, haciendo uso del algortimos 2-opt para el proceso de optimización local de soluciones.
+También se considerarán dos variables meméticas del algoritmo genético usual, las variantes baldwiniana y lamarckiana, haciendo uso del algortimo 2-opt para el proceso de optimización local de soluciones.
 
 \section{Implementación}
 
-Para la implementación de los algoritmos necesarios para esta práctica nuevamente hemos optado por \code{Python 3.6}, en esta ocasión sin hacer uso de la librería Theano para hacer cálculos matrices optimizados, pese a que hemos tenido algunos problemas de rendimiento que se detallarán más adelante, en un inicio no se consideró necesario y por tanto no se ha incorporado esta librería.\\
+Para la implementación de los algoritmos necesarios para esta práctica nuevamente hemos optado por \code{Python 3.6}, en esta ocasión sin hacer uso de la librería \code{Theano} para hacer cálculos matriciales optimizados, pese a que hemos tenido algunos problemas de rendimiento que se detallarán más adelante, en un inicio no se consideró necesario y por tanto no se ha incorporado esta librería.\\
 
-Sí que hemos hecho uso de \code{Numpy} ya que para los cálculos matrices resulta mucho más eficiente que implementar el bucle doble pertinente, de hecho ya veremso el problema que nos ha supuesto el uso de un bucle doble en nuestro código. Señalar que la versión de este módulo es \code{Numpy 1.11.3}, en el ordenador de sobremesa teníamos otra versión anterior y el programa no funcionaba correctamente, en concreto al crear con la función \code{random.permutation}, los resultados no eran correctos.
+Sí que hemos hecho uso de \code{Numpy} ya que para los cálculos matriciales resulta mucho más eficiente que implementar el bucle doble pertinente, de hecho ya veremos el problema que nos ha supuesto el uso de un bucle doble en nuestro código. Señalar que la versión de este módulo es \code{Numpy 1.11.3}, en el ordenador de sobremesa teníamos otra versión anterior y el programa no funcionaba correctamente, en concreto al crear la población inicial con la función \code{random.permutation}, los resultados no eran correctos.
 
 \subsection{Elementos del algoritmo genético básico}
 
-La \textbf{representación} que hemos empleado para los cromosomos es la usual, una permutación de n elementos siendo n el número de localizaciones y unidades que componen el problema. Así, si nos ceñimos al problema original del QAP, cada elementos de la permutación sería la localización en la que situaríamos la unidades correspondiente a ese índice de la permutación.\\
+La \textbf{representación} que hemos empleado para los cromosomas es la usual, una permutación de n elementos siendo n el número de localizaciones y unidades que componen el problema. Así, si nos ceñimos al problema original del QAP, cada elemento de la permutación sería la localización en la que situaríamos la unidad correspondiente a ese índice de la permutación.\\
 
-El \textbf{operador de cruce} empleado ha sido el OX de uso muy extendido. Otro operador de cruce muy usado es el denominado PMX pero hemos optado por este primero por la facilidad de su implementación. Por otro lado el \textbf{operador de mutación} es simplemente el intercambio en de valores entre dos elementos de la permutación.\\
+El \textbf{operador de cruce} empleado ha sido el OX de uso muy extendido. Otro operador de cruce muy usado es el denominado PMX pero hemos optado por este primero por la facilidad de su implementación. Por otro lado el \textbf{operador de mutación} es simplemente el intercambio entre dos elementos de la permutación.\\
 
-Como operador de selección empleamos torneo binario, para ello aprovechamos que ordenamos los padres de modo que el generar números aleatorios para seleccionar los padres lo hacemos generando un número aleatorio y a continuación otro menor o igual que él, que será el padre que seleccionemos para cruce como resultado del torneo. Hablaremos de esto en la siguiente subsección.
+Como \textbf{operador de selección} empleamos torneo binario, para ello aprovechamos que ordenamos los padres de modo que al generar números aleatorios para seleccionar los padres lo hacemos generando un número aleatorio y a continuación otro menor o igual que él, que será el padre que seleccionemos para cruce como resultado del torneo. Hablaremos de esto en la siguiente subsección.
 
 \subsection{Algunas consideraciones}
 
 \begin{enumerate}
-\item Un problema que hemos encontrado es que durante la ejecución del algoritmo, en concreto el lamarckiano, que es el que hemos empleado para tratar de obtener una buena solución en el tai256c, se producían fluctuaciones en el fitness de las soluciones. Esto creo que se debe a haber empleado floats para almacenar las soluciones así como las matrices del problema con el objetivo de hacer un código más genérico. No obstante se cambió el código de modo que ahora se emplean enteros de 64 bits y no parece que se dé este problema.
-\item Debido al mecanismo empleado para leer las matrices de los ficheros de datos es necesario que haya una línea en blanco entre cada uno de los elementos del problema; las dos matrices y la dimensión del problema. Así por ejemplo se han realizado estas modificaciones en los archivos de tai que se han empleado para la realización de esta práctica.
-\item Otro problema que hemos tenido ha sido la elección del lenguaje de programación, como ya dijo el profesor Python puede resultar lento, peso a que este problema podemos solventarlo haciendo uso de librerías externas como Numpy, no obstante el bucle doble, que se ha escrito para programar el algoritmo 2opt hace que una ejecución de este algoritmo sobre una instancia del tai256 duré más de un minuto, con lo cuál en una población de 100 individuos que es la que se ha considerado en las experimentaciones, esto se traduciría en un mínimo de 100 minutos por generación algo que no se podía abordar si queríamos obtener resultados tras varias generaciones del algoritmo.\\
+\item Un problema que hemos encontrado es que durante la ejecución del algoritmo, en concreto el lamarckiano, que es el que hemos empleado para tratar de obtener una buena solución en el \code{tai256c}, se producían fluctuaciones en el fitness de las soluciones. Esto creo que se debe a haber empleado floats para almacenar el fitness de las soluciones así como las matrices del problema con el objetivo de hacer un código más genérico. No obstante se cambió el código de modo que ahora se emplean enteros de 64 bits y no parece que se dé este problema de precisión.
 
-En ocasiones las variantes lamarckiana y balwiniana se basan en aplicar el proceso de optimización sólo a algunos elementos de la población, y esta ha sido la opción que hemos elegido. En concreto, y tras alguna experimentación que comentaremos en la sección siguiente, aplicamos los procesos de optimización a los 20 mejores individuos de la población. Además se ha hecho uso del módulo \code{multiprocessing} que nos permite realizar cálculos en paralelo en cada uno de los núcleos (lógicos) de nuestro ordenador. Así en nuestro caso podemos realizar hasta 8 proceso de optimización simultáneamente, reduciendo así el tiempo tomado por cada generación del algoritmo.
+\item Debido al mecanismo empleado para leer las matrices de los ficheros de datos es necesario que haya una línea en blanco entre cada uno de los elementos del problema; las dos matrices y la dimensión del problema. Así por ejemplo se han realizado estas modificaciones en los archivos de tai que se han empleado para la realización de esta práctica.
+
+\item Otro problema que hemos tenido ha sido la elección del lenguaje de programación, como ya dijo el profesor Python puede resultar lento, pese a que este problema podemos solventarlo haciendo uso de librerías externas como Numpy. No obstante el bucle doble, que se ha escrito para programar el algoritmo 2opt hace que una ejecución de este algoritmo sobre una instancia del tai256 duré más de un minuto, con lo cuál en una población de 100 individuos que es la que se ha considerado en las experimentaciones, esto se traduciría en un mínimo de 100 minutos por generación algo que no se podía abordar si queríamos obtener resultados tras varias generaciones del algoritmo.\\
+
+En ocasiones las variantes lamarckiana y balwiniana se basan en aplicar el proceso de optimización sólo a algunos elementos de la población, y esta ha sido la opción que hemos elegido. En concreto, y tras alguna experimentación que comentaremos en la sección siguiente, aplicamos el proceso de optimización a los 20 mejores individuos de la población. Además se ha hecho uso del módulo \code{multiprocessing} que nos permite realizar cálculos en paralelo en cada uno de los núcleos (lógicos) de nuestro ordenador. Así en nuestro caso podemos realizar hasta 8 procesos de optimización simultáneamente, reduciendo así el tiempo tomado por cada generación del algoritmo.
 
 \item Teniendo en cuenta que habrá ciertos operadores de cruce o probabilidades de cruce y mutación que exploren mejor el espacio de búsqueda, también es cierto que influye el azar en este tipo de algoritmos. Así que para poder ejecutar un gran número de ejecuciones del algoritmo sobre el mismo conjunto de datos lo que hemos hecho ha sido almacenar, tanto las mejores soluciones encontradas durante el proceso, como las generaciones producidas, cada 10. Así en un momento dado se puede parar el algoritmo y retomarlo en el punto en el que se dejó.\\
 
-Es claro que para poder repetir los experimentos no basta con fijar una semilla aleatoria al inicio, habrá que realizar las iteraciones en las mismas ejecuciones en el que se realizaron, es decir, se repetirían las ejecuciones del algoritmo en los mismos bloques en los que se realizaron originalmente, de modo que la semilla aleatoria siempre dé los mismo resultados. Los archivos con las generaciones podemos encontrarlo en el directorio \archive{lamarck20BestGenerations}. Y el código relativo a la carga de una generación almacenada y el almacenamiento de las nuevas producidas está comentado en el archivo \archive{GAlamarck.py}.
+Es claro que para poder repetir los experimentos no basta con fijar una semilla aleatoria al inicio, habrá que realizar las iteraciones en los mismos bloques en los que se realizaron originalmente, de modo que la semilla aleatoria siempre dé los mismo resultados. Los archivos con las generaciones podemos encontrarlos en el directorio \archive{lamarck20BestGenerations}. Y el código relativo a la carga de una generación almacenada y el almacenamiento de las nuevas producidas está comentado en el archivo \archive{GAlamarck.py}.
 
-\item En cuanto a la generación de número aleatorios para el cruce y la mutación lo que hacemos es algo que aprendimos en Metaheurísticas. Dado que la generación de números aleatorios puede ser muy costosa, en lugar de generar un número aleatorio para por ejemplo cada padre y cromosoma para ver si lo mutamos o no. Lo que hacemos es calcular cuántos cruces y mutaciones se realizarán en media en cada generación y hacemos siempre este número fijo. De modo que sólo hemos de generar esta cantidad fija de números aleatorios en cada generación y no la cantidad que se generaría si lo hiciésemos de la forma usual. Por esto en el código tenemos las variables \code{nCrosses} y \code{nMutations}.
+\item En cuanto a la generación de número aleatorios para el cruce y la mutación lo que hacemos es algo que aprendimos en Metaheurísticas. Dado que la generación de números aleatorios puede ser muy costosa, entonces no queremos generar un número aleatorio para por ejemplo cada padre y cromosoma para ver si lo mutamos o no.   Lo que hacemos es calcular cuántos cruces y mutaciones se realizarán en media en cada generación y realizamos siempre este número fijo. De modo que sólo hemos de generar esta cantidad fija de números aleatorios en cada generación y no la cantidad que se generaría si lo hiciésemos de la forma usual. Por esto en el código tenemos las variables \code{nCrosses} y \code{nMutations}.
+
+\item Nuestro algoritmo genético básico sigue un modelo generacional aunque incorpora elitismo al reemplazar al peor hijo con el peor padre si éste es mejor que el mejor de los hijos.
 \end{enumerate}
 
 \section{Experimentación}
 
-Debido a los problemas debidos al tiempo de cómputo necesario tomado por los algoritmos se ha decidido realizar una comparativa de los distintos algoritmos sobre un problema más pequeño el \code{tai60a}. Comenzamos en primer lugar a realizar experimentos sobre un grid de parámetros para el algoritmo genético básico, experimentos que se repetirán para los dos variantes de este algoritmo.
+Debido al tiempo de cómputo necesario para los algoritmos se ha decidido realizar una comparativa de los distintos algoritmos sobre un problema más pequeño el \code{tai60a}. Para ello realizaremos una experimentación sobre un grid de parámetros con los tres algoritmos implementados. Comenzamos con el algoritmo básico:
 
 \includegraphics[width = \textwidth]{img/graphics/GAgenericPC01.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAgenericPC05.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAgenericPC07.pdf}
 
-En estas gráficas podemos observar algo y es que en un principio, para una misma probabilidad de cruce (que sería en media el número de cruces que haríamos por generación) es malo tanto una probabilidad de mutación baja, hemos probado a no poner ninguna mutación y con lo cual se observa que el algoritmo se queda estancado. Como una probabilidad de mutación demasiado alta, en este caso las probabilidades 0.05 y 0.1 han resultado perjudiciales para la exploración del algoritmo. Este hecho puede deberse a que lo que hacemos con un número de mutaciones muy elevado es perder las propiedades o genes buenos de los cromosomas de nuestra población, no siendo capaces de encontrar una mejor solución a partir de ellos. Así la mejor probabilidad para este problema, de las 4 que hemos probado, es 0.1.
+En estas gráficas podemos observar que en un principio, para una misma probabilidad de cruce (que sería en media el número de cruces que haríamos por generación) es malo tanto una probabilidad de mutación baja (hemos probado a no hacer ninguna mutación y con lo cual se observa que el algoritmo se queda estancado), como una probabilidad de mutación demasiado alta, en este caso las probabilidades 0.05 y 0.1 han resultado perjudiciales para el algoritmo. Este hecho puede deberse a que lo que hacemos con un número de mutaciones muy elevado es perder las propiedades o genes buenos de los cromosomas de nuestra población, no siendo capaces de encontrar una mejor solución a partir de ellos. Así la mejor probabilidad para este problema, de las 4 que hemos probado, es 0.1.
 
 \includegraphics[width = \textwidth]{img/graphics/GAgenericFinal.pdf}
 
-Y aquí vemos cómo, una vez que fijamos la probabilidad de mutación a la mejor de las 4 probadas, cuánto menor es la probabilidad de cruce mejor es el resultado que podemos obtener. El cruce no deja de ser otra fuente de diversidad en nuestro algoritmo, con lo que este hecho puede darse por una razón similar a la que hemos expuesto anteriormente para la probabilidad de mutación.\\
+Y aquí vemos cómo, una vez que fijamos la probabilidad de mutación a la mejor de las 4 probadas, cuánto menor es la probabilidad de cruce mejor es el resultado que podemos obtener. El cruce no deja de ser otra fuente de diversidad en nuestro algoritmo, con lo que este hecho puede darse por una razón similar a la que hemos expuesto anteriormente para la probabilidad de mutación. Pasemos ahora a los resultados obtenidos con la variante baldwiniana:\\
 
 \includegraphics[width = \textwidth]{img/graphics/GAbaldwinPC01.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAbaldwinPC05.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAbaldwinPC07.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAbaldwinFinal.pdf}
 
-Aquí sucede algo extraño y es que cuando la probabilidad de cruce es alta, 0.7, entonces es cuando mejor funciona el algoritmo si no hacemos ningún tipo de mutación. Esto puede implicar que los mejores individuos de la población llegan, a través del proceso de optimización, a buenas soluciones y que participando en el corte con más frecuencia dan lugar a muy buenas soluciones. Además nos bastacon la variabilidad de que nos da el cruce, de hecho el mutar las soluciones hace que pierdan sus buenas facultades.\\
+Aquí sucede algo extraño y es que cuando la probabilidad de cruce es alta, 0.7, entonces es cuando mejor funciona el algoritmo si no hacemos ningún tipo de mutación. Esto puede implicar que los mejores individuos de la población llegan, a través del proceso de optimización, a buenas soluciones y que participando en el corte con más frecuencia dan lugar a muy buenas soluciones. Además nos basta con la variabilidad que nos da el cruce, de hecho el mutar las soluciones hace que pierdan sus buenas facultades.\\
 
-No obstante hemos de señalar que estamos aplicando la variante baldwiniana de una forma extraña al sólo calcular el fitness ``prometedor'' para ciertos elementos de la población y no para todos. Como lo aplicamos sobre los mejores elementos en principio no debería tener un comportamiento muy distinto al algoritmo genérico más que reordenar estos mejores individuos en función de su potencial. Desgraciadamente debido a la mala elección en el lenguaje de programación, como ya hemos dicho, no hemos podido aplicar el proceso de optimización a todos los individuos de la población.
+No obstante hemos de señalar que estamos aplicando la variante baldwiniana de una forma extraña al sólo calcular el fitness ``prometedor'' para ciertos elementos de la población y no para todos. Como lo aplicamos sobre los mejores elementos en principio no debería tener un comportamiento muy distinto al algoritmo genérico más que reordenar estos mejores individuos en función de su potencial. Desgraciadamente debido a la mala elección en el lenguaje de programación, como ya hemos dicho, no hemos podido aplicar el proceso de optimización a todos los individuos de la población. Pasemos ya finalmente a la variante lamarckiana:\\
 
 \includegraphics[width = \textwidth]{img/graphics/GAlamarckPC01.pdf}
 \includegraphics[width = \textwidth]{img/graphics/GAlamarckPC05.pdf}
@@ -139,7 +143,7 @@ Aquí lo que apreciamos es que, dado que el espacio de búsqueda es más pequeñ
 
 \includegraphics[width = \textwidth]{img/graphics/final.pdf}
 
-Finalmente aquí vemos una comparativa de los tres algoritmos. Vemos como es el lamarckiano el que obtiene mejores resultados con diferencia, esto tiene sentido ya que realiza un proceso de explotación más intenso y las soluciones que encuentra en durante este proceso las incorpora en la población. En cambio como ya adelantemos anteriormente el comportamiento del algoritmo genérico y el baldwiniano es muy similar, de hecho encontramos que es el genérico el que mejor se comporta. Esto puede señalar que el fitness potencial que le asociamos a los individuos de la población no es tan buen indicativo como podríamos pensar, o que no es suficiente con calcularlo para sólo los 20 individuos de la población.
+Finalmente aquí vemos una comparativa de los tres algoritmos. Vemos como es el lamarckiano el que obtiene mejores resultados con diferencia, esto tiene sentido ya que realiza un proceso de explotación más intenso y las soluciones que encuentra durante este proceso las incorpora en la población. En cambio como ya adelantamos anteriormente el comportamiento del algoritmo genérico y el baldwiniano es muy similar, de hecho encontramos que es el genérico el que mejor resultados encuentra. Esto puede señalar que el fitness potencial que le asociamos a los individuos de la población no es tan buen indicativo como podríamos pensar, o que no es suficiente con calcularlo para sólo los 20 individuos de la población.
 
 \begin{center}
 \begin{table}[H]
@@ -166,15 +170,15 @@ PC 0.7 PM 0.1                       & 9.53583288192749                          
 \end{table}
 \end{center}
 
-Lo primero que apreciamos en la tabla anterior es algo evidente, cuantos más cruces y mutaciones se realicen mayor será el tiempo de ejecución del algoritmo. Como podemos ver el algoritmo balwiniano tarda más que el lamarckiano, teóricamente deberían tardar lo mismo ya en ambos casos aplicamos el proceso de optimización a los 20 mejores elementos de la población y lo que cambia en principio es simplemente la información que tomamos de ese proceso. No obstante según se ha implementado el algoritmo baldwiniano conlleva bastante más cálculos que el lamarckiano y por esto tenemos esta diferencia de tiempos.\\
+Lo primero que apreciamos en la tabla anterior es algo evidente, cuantos más cruces y mutaciones se realicen mayor será el tiempo de ejecución del algoritmo. Como podemos ver el algoritmo baldwiniano tarda más que el lamarckiano, teóricamente deberían tardar lo mismo ya en ambos casos aplicamos el proceso de optimización a los 20 mejores elementos de la población, y lo que cambia en principio es simplemente la información que tomamos de ese proceso. No obstante según se ha implementado el algoritmo baldwiniano conlleva bastante más cálculos que el lamarckiano y por esto tenemos esta diferencia de tiempos.\\
 
-Lo que hacemos es aplicar el algoritmo de optimización a los 20 mejores elementos de la población y en lugar de preservar los cálculos realizados, debido a una mala implementación, recalculo los fitness originales de los padres que han sido optimizados para las fases de elitismo.\\
+Lo que hacemos es aplicar el algoritmo de optimización a los 20 mejores elementos de la población y en lugar de preservar los cálculos realizados, debido a una mala implementación, recalcular los fitness originales de los padres que han sido optimizados para las fases de elitismo.\\
 
-Hay que señalar que para este experimento se han empleado dos implementaciones del opt distintas a la empleada para el problema de competición, se ha observado que si en lugar de aplicar la función que usa la factorización de la función de fitness calculamos el score de los individuos de la forma original se tarda menos en ambos casos. No obstante hemos probado a hacer esto sobre un individuo del \code{tai256c} y hemos notado que se tarda prácticamente lo mismo, con lo cual hemos optado por continuar ejecutando el algoritmo con el código para el 2opt que teníamos originariamente para ese problema (el algoritmo se está ejecutando en el sobremesa sobre el problema de la competición mientras realizamos estos experimentos menores en el portátil). También puede haber variaciones en los tiempos de estos experimentos debido a que hemos empleado el portátil mientras se ejecutaban.\\
+Hay que señalar que para este experimento se han empleado dos implementaciones del opt distintas a la empleada para el problema de competición, se ha observado que si en lugar de aplicar la función que usa la factorización de la función de fitness, calculamos el score de los individuos de la forma original se tarda menos para ambas variantes del genérico. No obstante hemos probado a hacer esto sobre un individuo del \code{tai256c} y hemos notado que se tarda prácticamente lo mismo, con lo cual hemos optado por continuar ejecutando el algoritmo con el código para el 2opt que teníamos originariamente para ese problema (el algoritmo se está ejecutando en el sobremesa sobre el problema de la competición mientras realizamos estos experimentos menores en el portátil). También puede haber variaciones en los tiempos de estos experimentos debido a que hemos empleado el portátil mientras se ejecutaban.\\
 
 Además de hacer estos experimentos más pequeños para poder estudiar el comportamiento de los algoritmos también hemos realizado algunos experimentos orientados a la competición, es decir, sobre el problema \code{tai256c}. En concreto nos centramos en probar la variante lamarckiana.\\
 
-En primer lugar probamos a aplicarlo sólamente una vez por generación y luego 10. Luego pasamos a realizar experimentos aplicando el 2opt a sólo los 10 peores individuos de la población obteniendo un resultado de 49900144 en dos generaciones, con una probabilidad de mutación de 0.1 y una de cruce de 0.3. Dado que la ejecución del algoritmo era muy lenta no realizamos una experimentación tan extensa. Una vez que descrubrimos el uso del módulo \code{multiprocessing} entonces se realizaron los siguientes experimentos:
+En primer lugar probamos a aplicarlo sólamente una vez por generación y luego 10. Luego pasamos a realizar experimentos aplicando el 2opt a sólo los 10 peores individuos de la población obteniendo un resultado de 49900144 en dos generaciones, con una probabilidad de mutación de 0.1 y una de cruce de 0.3. Dado que la ejecución del algoritmo era muy lenta no realizamos una experimentación más extensa. Una vez que descubrimos el uso del módulo \code{multiprocessing} entonces se realizaron los siguientes experimentos:
 
 \begin{center}
 \begin{table}[H]
@@ -195,9 +199,9 @@ En primer lugar probamos a aplicarlo sólamente una vez por generación y luego 
 \end{table}
 \end{center}
 
-A la luz de estos experimentos decidimos pasar a hacer un uso más intensivo de la variante lamarckaina aplicando el proceso de optimización sólo a los 20 mejores individuos de la población, ya hemos dicho que por el tiempo de cómputo no podíamos permitirnos el aplicar este algoritmo sobre todos los elementos de la misma. Para poder realizar diversas iteraciones del algoritmo lo que hicimos es ir almacenando las generaciones que se iban generando cada 10 de modo que pudiésemos retomar el algoritmo allí donde lo dejamos la última vez que paramos el algoritmo, también almacenamos las mejores soluciones que vamos encontrando.\\
+A la luz de estos resultados decidimos pasar a hacer un uso más intensivo de la variante lamarckiana aplicando el proceso de optimización sólo a los 20 mejores individuos de la población.\\
 
-En total se han realizado unas 407 iteraciones del algoritmo que son las que tenemos almacenadas en la carpeta \archive{lamarck20BestGenerations}. Es fácil deducir los bloques en los que se realizaron las distintas iteraciones ya que para poder tener correctamente las generaciones que se habían realizado iniciábamos la cuenta con el número de iteración siguiente a la última realizada, con lo que la última cifra del número de la generación nos da el bloque en el que se realizó. Así las iteraciones se realizaron en los siguiente bloques:
+En total se han realizado unas 407 iteraciones del algoritmo que son las que tenemos almacenadas en la carpeta \archive{lamarck20BestGenerations}. Es fácil deducir los bloques en los que se realizaron las distintas iteraciones, ya que para poder registrar correctamente las generaciones que se habían realizado iniciábamos la cuenta con el número de iteración siguiente a la última realizada, con lo que la última cifra del número de la generación nos da el bloque en el que se realizó. Así las iteraciones se realizaron en los siguiente bloques:
 
 \begin{itemize}
 \item 0-60
@@ -210,9 +214,43 @@ En total se han realizado unas 407 iteraciones del algoritmo que son las que ten
 \item 347-407
 \end{itemize}
 
-Comenzamos con una probabilidad de cruce de 0.3 y una de mutación de 0.1, con esto llegamos a una solución con un score de \textbf{44811968}, y seguimos algunas generaciones más con el algoritmo en estas condiciones. No obstante debido a que el algoritmo parecía estar encantado decidimos entorno a la iteración 123 bajar la probabilidad de mutación a 0.02 y subir la de cruce a 0.5, tras algunas generaciones más, en la 228 encontramos la mejor solución, con un fitness de \textbf{44804670}. Se pueden consultar otras soluciones encontradas en la carpeta \archive{resultsLamarck20Best}, en el nombre del archivo tenemos las probabilidades empleadas (PC y PM), el tamaño de la población, que siempre es 100 (PS), la iteración en la que se encontró, el tiempo de ejecución (aunque no es registra el tiempo total invertido durante todos los bloques) y el fitness de la solución (score).\\
+Comenzamos con una probabilidad de cruce de 0.3 y una de mutación de 0.1, con esto llegamos a una solución con un score de \textbf{44811968}, y seguimos algunas generaciones más con el algoritmo en estas condiciones. No obstante debido a que el algoritmo parecía estar estancado decidimos entorno a la iteración 123 bajar la probabilidad de mutación a 0.02 y subir la de cruce a 0.5, tras algunas generaciones más, en la 228 encontramos la mejor solución, con un fitness de \textbf{44804670}. Se pueden consultar otras soluciones encontradas en la carpeta \archive{resultsLamarck20Best}, en el nombre del archivo tenemos las probabilidades empleadas (PC y PM), el tamaño de la población, que siempre es 100 (PS), la iteración en la que se encontró, el tiempo de ejecución (aunque no es registra el tiempo total invertido durante todos los bloques) y el fitness de la solución (score).\\
 
-Nuevamente el algoritmo se quedó estancando y en la iteración 315 aumentamos las probabilidades de cruce y mutación (0.7 y 0.05 respectivamente) para intentar salir de este óptimo local sin ningún resultado. Y en la iteración 346 volvimos a cambiar las probabilidades a unas más bajas (0.3 y 0.01) e introdujimos un mecanismo por el que cada 10 iteraciones sin encontrar una mejor solución, se cambian los 30 peores individuos de la población (el 30\%) por unos nuevos individuos aleatorios para tratar de dar una mayor diversidad a la búsqueda, pero tampoco hemos podido obtener una mejor solución. El mecanismo de almacenamiento de generaciones y de reinicialización de la población se encuentran comentados en el código de \archive{GAlamarck.py}.
+Nuevamente el algoritmo se quedó estancando y en la iteración 315 aumentamos las probabilidades de cruce y mutación (0.7 y 0.05 respectivamente) para intentar salir de este óptimo local sin ningún resultado. Y en la iteración 346 volvimos a cambiar las probabilidades a unas más bajas (0.3 y 0.01) e introdujimos un mecanismo por el que, cada 10 iteraciones sin encontrar una mejor solución, se cambian los 30 peores individuos de la población (el 30\%) por unos nuevos individuos aleatorios para tratar de dar una mayor diversidad a la búsqueda, pero tampoco hemos podido obtener una mejor solución. El mecanismo de almacenamiento de generaciones y de reinicialización de la población se encuentran comentados en el código de \archive{GAlamarck.py}.
+
+\section{Manual de usuario}
+
+\begin{enumerate}
+\item En la carpeta en la que tengamos todos los archivos con el código tendremos que crear una carpeta llamada \archive{data} donde almacenaremos los ficheros con los datos de los distintos problemas. Eventualmente puede ser necesario como se ha comentado anteriormente el introaducir alguna línea en blanco para separar los distintos elementos del problema.
+
+\item Y ahora para ejecutar un algoritmo sobre un problema concreto veamos el siguiente código que podemos encontrar en el archivo \code{main.py}:
+
+\begin{lstlisting}
+np.random.seed(12345678) #elegimos la semilla aleatoria
+
+#parametros del problema (tamanio poblacion, probabilidad de cruce y probabilidad de mutacion)
+parameters = genericParameters(100, 0.5, 0.02)
+
+#cargamos los datos del problema elegido
+problemDim, weightMtx, distanceMtx = rd.readData("tai256c.dat")
+
+ag = AG.AG(problemDim, weightMtx, distanceMtx)
+agl = AGL.AGL(problemDim, weightMtx, distanceMtx)
+agb = AGB.AGB(problemDim, weightMtx, distanceMtx)
+
+print(agl.AGL(parameters))
+\end{lstlisting}
+
+Las últimas líneas del código se encargan de crear los objetos con los que podremos ejecutar los distintos algoritmos: genérico (\code{ag}), baldwiniano(\code{agb}) y lamarckiano (\code{agl}). Aquí estamos empleando el algoritmo lamarckiano pero si quisiéramos ejecutar uno de los otros dos haríamos \code{ag.AG(parameters)} o \code{agb.AGB(parameters)}.
+\end{enumerate}
+
+\section{Bibliografía}
+
+\begin{itemize}
+\item Los apuntes de la asignatura y el guión de la práctica.
+\item Las \href{http://sci2s.ugr.es/graduateCourses/Metaheuristicas}{transparencias} sobre genéticos del profesor Francisco Herrera.
+\item El \href{https://github.com/Griger/MH/tree/master/P3/software/BIN}{código} desarrollado por mí para la asignatura de Metaheurísticas para algoritmos genéticos.
+\end{itemize}
 
 
 \end{document}
